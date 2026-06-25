@@ -2,36 +2,58 @@
 
   <!-- ================= NAV BAR ================= -->
   <nav class="fixed w-full bg-white/90 backdrop-blur-md border-b border-gray-100 z-50 transition-all">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="flex justify-between items-center h-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative w-full">
+      
+      <!-- MOBILE VIEW (md:hidden) -->
+      <div class="md:hidden flex items-center justify-between w-full h-20">
+        <!-- Izquierda: Hamburguesa -->
+        <button (click)="toggleMenu()" class="text-jalaspe-blue focus:outline-none p-1 hover:bg-gray-50 rounded-lg transition-colors">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
         
-        <!-- Logo -->
-        <a href="#inicio" class="flex-shrink-0 flex items-center cursor-pointer">
-          <h1 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Jalas<span class="text-jalaspe-lime">.Pe</span></h1>
+        <!-- Centro: Logo Absolute para simetría perfecta -->
+        <a href="#inicio" (click)="cerrarMenu()" class="absolute left-1/2 -translate-x-1/2 flex items-center cursor-pointer">
+          <h1 class="text-2xl font-bold text-jalaspe-blue tracking-tight">Jalas<span class="text-jalaspe-lime">.Pe</span></h1>
         </a>
 
+        <!-- Derecha: Botón Ingresar Pequeño -->
+        <a routerLink="/auth/login" class="bg-jalaspe-blue hover:bg-[#00223a] text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors">
+          Ingresar
+        </a>
+      </div>
+
+      <!-- DESKTOP VIEW (hidden md:flex) -->
+      <div class="hidden md:flex w-full justify-between items-center h-20">
+        <!-- Logo Desktop -->
+        <a href="#inicio" (click)="cerrarMenu()" class="flex-shrink-0 flex items-center cursor-pointer">
+          <h1 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Jalas<span class="text-jalaspe-lime">.Pe</span></h1>
+        </a>
+        
         <!-- Desktop Menu -->
-        <div class="hidden md:flex space-x-8 items-center">
+        <div class="space-x-8 items-center flex">
           <a href="#inicio" class="text-sm font-semibold text-jalaspe-blue hover:text-jalaspe-turquoise transition-colors">Inicio</a>
           <a href="#como-funciona" class="text-sm font-semibold text-jalaspe-grey hover:text-jalaspe-blue transition-colors">Cómo Funciona</a>
           <a href="#nosotros" class="text-sm font-semibold text-jalaspe-grey hover:text-jalaspe-blue transition-colors">Nosotros</a>
           <a href="#contacto" class="text-sm font-semibold text-jalaspe-grey hover:text-jalaspe-blue transition-colors">Contacto</a>
         </div>
 
-        <!-- Call to Action -->
-        <div class="hidden md:flex items-center space-x-4">
+        <!-- Call to Action (Desktop) -->
+        <div class="flex items-center space-x-4">
           <a routerLink="/auth/login" class="text-sm font-semibold text-jalaspe-blue hover:text-jalaspe-turquoise transition-colors">Ingresar</a>
           <a routerLink="/auth/login" class="bg-jalaspe-blue hover:bg-[#00223a] text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-jalaspe-blue/20 hover:scale-105">
             Comenzar Gratis
           </a>
         </div>
+      </div>
 
-        <!-- Mobile Menu Button (Hamburger) -->
-        <div class="md:hidden flex items-center">
-          <button class="text-jalaspe-blue hover:text-jalaspe-turquoise focus:outline-none">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-          </button>
-        </div>
+      <!-- ================= MENÚ DESPLEGABLE MÓVIL ================= -->
+      <div *ngIf="menuAbierto" class="md:hidden absolute left-0 right-0 top-20 bg-white border-b border-gray-100 shadow-xl px-6 py-4 flex flex-col space-y-4 pb-6 animate-fade-in-down z-40">
+          <a href="#inicio" (click)="cerrarMenu()" class="font-semibold text-jalaspe-blue py-2 border-b border-gray-50">Inicio</a>
+          <a href="#como-funciona" (click)="cerrarMenu()" class="font-semibold text-jalaspe-grey py-2 border-b border-gray-50">Cómo Funciona</a>
+          <a href="#nosotros" (click)="cerrarMenu()" class="font-semibold text-jalaspe-grey py-2 border-b border-gray-50">Nosotros</a>
+          <a href="#contacto" (click)="cerrarMenu()" class="font-semibold text-jalaspe-grey py-2">Contacto</a>
+          <hr class="border-gray-100 my-2">
+          <a routerLink="/auth/login" class="font-bold text-jalaspe-blue text-center py-2">Ingresar a mi cuenta</a>
       </div>
     </div>
   </nav>
@@ -39,7 +61,6 @@
   <!-- ================= HERO (Inicio) ================= -->
   <section id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex items-center min-h-[90vh]">
     <div class="absolute inset-0 bg-gradient-to-br from-[#eaf2f8] to-[#f8f9fa] -z-10"></div>
-    <!-- Decoración de fondo -->
     <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-jalaspe-turquoise/10 blur-3xl -z-10"></div>
     <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-jalaspe-lime/10 blur-3xl -z-10"></div>
 
@@ -75,28 +96,24 @@
 
         <!-- Derecha: Mockup del Celular -->
         <div class="relative hidden lg:block">
-          <!-- Fondo decorativo detrás del celular -->
           <div class="absolute inset-0 bg-gradient-to-tr from-jalaspe-turquoise/20 to-jalaspe-lime/20 rounded-[3rem] transform rotate-3 scale-105"></div>
           
-          <!-- Marco del celular (Cambiado a bg-white y flex-col) -->
+          <!-- Marco del celular -->
           <div class="relative bg-white rounded-[3rem] border-[8px] border-gray-900 shadow-2xl overflow-hidden aspect-[9/19] max-w-[320px] mx-auto flex flex-col">
             
-            <!-- Zona Segura / Espacio para el Notch (Pone el bloque negro sin pisar la app) -->
+            <!-- Zona Segura / Espacio para el Notch -->
             <div class="h-6 w-full bg-white relative flex-shrink-0">
               <div class="absolute top-0 inset-x-0 h-4 bg-gray-900 rounded-b-xl w-24 mx-auto z-20"></div>
             </div>
             
-            <!-- Contenedor del contenido de la App -->
             <div class="relative flex-1 overflow-hidden">
-              <img src="assets/img/app-mockup.png" alt="App JalasPe" class="w-full h-full object-cover bg-gray-100 z-10" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+              <img src="/assets/img/app-mockup.png" alt="App JalasPe" class="w-full h-full object-cover bg-gray-100 z-10" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
               
-              <!-- Placeholder si la foto no existe aún -->
               <div class="absolute inset-0 bg-gray-50 flex flex-col items-center justify-center text-center p-6 z-0" style="display: none;">
                 <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 <p class="text-xs text-gray-400">Guarda una foto vertical en:<br><strong class="text-gray-500">assets/img/app-mockup.png</strong></p>
               </div>
             </div>
-            
           </div>
         </div>
 
@@ -113,32 +130,22 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-        <!-- Línea conectora (Desktop) -->
         <div class="hidden md:block absolute top-12 left-24 right-24 h-0.5 bg-gradient-to-r from-jalaspe-blue/20 via-jalaspe-turquoise/20 to-jalaspe-lime/20 -z-10"></div>
 
-        <!-- Paso 1 -->
         <div class="relative bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
-          <div class="w-16 h-16 bg-jalaspe-blue text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg shadow-jalaspe-blue/20">
-            1
-          </div>
+          <div class="w-16 h-16 bg-jalaspe-blue text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg shadow-jalaspe-blue/20">1</div>
           <h4 class="text-xl font-bold text-center mb-4">Inicia un Chat</h4>
           <p class="text-jalaspe-grey text-center leading-relaxed text-sm">Ingresa a tu panel y dile a nuestro Agente qué tipo de experiencia buscas. "Un fin de semana relax en Paracas" o "Aventura mochilera en Huaraz".</p>
         </div>
 
-        <!-- Paso 2 -->
         <div class="relative bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
-          <div class="w-16 h-16 bg-jalaspe-turquoise text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg shadow-jalaspe-turquoise/20">
-            2
-          </div>
+          <div class="w-16 h-16 bg-jalaspe-turquoise text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg shadow-jalaspe-turquoise/20">2</div>
           <h4 class="text-xl font-bold text-center mb-4">La IA procesa</h4>
           <p class="text-jalaspe-grey text-center leading-relaxed text-sm">Nuestro motor analiza miles de rutas, tiempos de traslado y costos para estructurar un itinerario lógico, optimizado y adaptado a tus preferencias.</p>
         </div>
 
-        <!-- Paso 3 -->
         <div class="relative bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
-          <div class="w-16 h-16 bg-jalaspe-lime text-jalaspe-blue rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg shadow-jalaspe-lime/20">
-            3
-          </div>
+          <div class="w-16 h-16 bg-jalaspe-lime text-jalaspe-blue rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg shadow-jalaspe-lime/20">3</div>
           <h4 class="text-xl font-bold text-center mb-4">Aprueba y Viaja</h4>
           <p class="text-jalaspe-grey text-center leading-relaxed text-sm">Recibe tu plan detallado día por día. Guárdalo en tu directorio, hazle ajustes pidiéndoselo a la IA, y prepárate para disfrutar.</p>
         </div>
@@ -148,13 +155,11 @@
 
   <!-- ================= NOSOTROS ================= -->
   <section id="nosotros" class="py-24 bg-jalaspe-blue text-white relative overflow-hidden">
-    <!-- Patrón de fondo sutil -->
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
     
     <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
-        <!-- Misión / Nosotros (Izquierda) -->
         <div>
           <h3 class="text-jalaspe-lime font-bold uppercase tracking-wider text-sm mb-2">Nuestro ADN</h3>
           <h2 class="text-4xl font-extrabold text-white mb-6">Tecnología con propósito social</h2>
@@ -166,21 +171,16 @@
           </p>
         </div>
 
-        <!-- Foto del equipo (Derecha) -->
         <div class="relative rounded-2xl overflow-hidden shadow-2xl group border border-white/10 aspect-video flex items-center justify-center bg-[#001f33]">
-          <!-- Superposición de color que desaparece al pasar el mouse -->
           <div class="absolute inset-0 bg-jalaspe-blue/30 group-hover:bg-transparent transition-all z-10 duration-500 pointer-events-none"></div>
           
-          <!-- Aquí irá la foto real del team (assets/img/team-photo.jpg) -->
           <img src="/assets/img/team-photo.jpg" alt="Equipo JalasPe" class="w-full h-full object-cover z-0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
           
-          <!-- Placeholder si la foto no existe aún -->
           <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-0" style="display: none;">
             <svg class="w-16 h-16 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             <p class="text-sm text-gray-400">Guarda una foto panorámica en:<br><strong class="text-gray-300">assets/img/team-photo.jpg</strong></p>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -201,7 +201,6 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
         
-        <!-- Marca -->
         <div class="md:col-span-2">
           <h1 class="text-3xl font-bold text-jalaspe-blue tracking-tight mb-4">Jalas<span class="text-jalaspe-lime">.Pe</span></h1>
           <p class="text-jalaspe-grey text-sm max-w-sm">
@@ -209,7 +208,6 @@
           </p>
         </div>
 
-        <!-- Enlaces Rápidos -->
         <div>
           <h4 class="font-bold text-jalaspe-blue mb-4">Plataforma</h4>
           <ul class="space-y-2">
@@ -219,7 +217,6 @@
           </ul>
         </div>
 
-        <!-- Contacto -->
         <div id="contacto">
           <h4 class="font-bold text-jalaspe-blue mb-4">Contacto</h4>
           <ul class="space-y-2">

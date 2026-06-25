@@ -1,95 +1,153 @@
-<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue">
+<!-- Contenedor principal: sin padding inferior -->
+<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue overflow-hidden pt-16 md:pt-0">
 
-  <!-- Sidebar (Modo Activo en: Mis Planes) -->
+  <!-- Sidebar Inteligente -->
   <app-sidebar></app-sidebar>
 
-  <!-- Área Principal: Interfaz de Chat -->
-  <main class="flex-1 flex flex-col overflow-hidden bg-white relative">
+  <div class="flex-1 flex overflow-hidden relative">
     
-    <!-- Topbar del Chat -->
-    <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 lg:px-8 z-10 shadow-sm">
-      <div class="flex items-center">
-        <!-- Botón Volver -->
-        <a routerLink="/app" class="mr-4 text-jalaspe-grey hover:text-jalaspe-blue transition-colors cursor-pointer">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        </a>
-        <!-- Info del Agente -->
-        <div>
-          <h2 class="text-lg font-bold text-jalaspe-blue leading-tight">Agente JalasPe</h2>
-          <div class="flex items-center">
-            <span class="w-2 h-2 rounded-full bg-jalaspe-lime mr-1.5"></span>
-            <p class="text-xs text-jalaspe-grey font-medium">Asistente IA en línea</p>
+    <!-- ================= COLUMNA IZQUIERDA: EL CHAT ================= -->
+    <main class="flex-1 flex flex-col min-w-0 bg-white">
+      
+      <!-- Topbar del Chat con pl-16 en móvil para la hamburguesa -->
+      <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-6 z-10 shadow-sm flex-shrink-0">
+        <div class="flex items-center">
+          <a routerLink="/app/planes" class="mr-3 text-jalaspe-grey hover:text-jalaspe-blue transition-colors cursor-pointer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          </a>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-jalaspe-blue leading-tight truncate max-w-[150px] sm:max-w-xs">{{ nombrePlan }}</h2>
+            <div class="flex items-center">
+              <span class="w-2 h-2 rounded-full bg-jalaspe-lime mr-1.5 animate-pulse"></span>
+              <p class="text-[10px] sm:text-xs text-jalaspe-grey font-medium">IA en línea</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN MÓVIL: Abrir Resumen -->
+        <button (click)="toggleResumenMobile()" class="lg:hidden bg-jalaspe-blue/10 text-jalaspe-blue hover:bg-jalaspe-blue/20 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center transition-colors">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          Resumen
+        </button>
+      </header>
+
+      <!-- Área de Mensajes -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-gray-50/50">
+        <div class="flex items-start max-w-[90%] sm:max-w-[85%]">
+          <div class="w-8 h-8 rounded-full bg-jalaspe-blue flex items-center justify-center flex-shrink-0 mr-3 mt-1">
+            <span class="text-white text-xs font-bold">IA</span>
+          </div>
+          <div class="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none shadow-sm">
+            <p class="text-sm text-gray-700 leading-relaxed">¡Genial! Ya tengo anotado que viajan a Paracas en Cruz del Sur. Ahora, ¿prefieren quedarse en un Airbnb frente al mar o buscan un Hostal más fiestero para el grupo?</p>
+          </div>
+        </div>
+
+        <div class="flex items-start justify-end max-w-[90%] sm:max-w-[85%] ml-auto">
+          <div class="bg-jalaspe-blue text-white p-4 rounded-2xl rounded-tr-none shadow-sm">
+            <p class="text-sm leading-relaxed">Un Airbnb está perfecto. Somos 3 por ahora, pero tal vez se sume uno más.</p>
           </div>
         </div>
       </div>
+
+      <!-- Input de Chat -->
+      <div class="p-3 sm:p-4 bg-white border-t border-gray-100">
+        <form class="max-w-4xl mx-auto relative flex items-center">
+          <input type="text" class="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/10 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400 text-sm" placeholder="Responde aquí...">
+          <button type="submit" class="absolute right-1.5 w-9 h-9 rounded-lg bg-jalaspe-blue hover:bg-[#00223a] text-white flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- ================= FONDO OSCURO MÓVIL (Backdrop para el Resumen) ================= -->
+    <div *ngIf="mostrarResumenMobile" (click)="toggleResumenMobile()" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 lg:hidden transition-opacity"></div>
+
+    <!-- ================= COLUMNA DERECHA: DASHBOARD DEL PLAN (Sliding Drawer) ================= -->
+    <aside class="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white border-l border-gray-100 flex flex-col z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:w-96 lg:translate-x-0"
+           [class.translate-x-0]="mostrarResumenMobile"
+           [class.translate-x-full]="!mostrarResumenMobile">
       
-      <!-- Píldora de usuario -->
-      <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 hidden sm:flex">
-        <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
-        <div class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm">
-          {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
-        </div>
-      </div>
-    </header>
-
-    <!-- Historial de Chat -->
-    <div class="flex-1 overflow-y-auto p-6 lg:p-8 bg-[#f8f9fa] space-y-6">
-      <div class="flex items-start max-w-3xl mx-auto w-full">
-        <div class="w-10 h-10 rounded-xl bg-jalaspe-blue text-jalaspe-lime flex items-center justify-center font-bold shadow-sm flex-shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-        </div>
-        <div class="ml-4 bg-white p-5 rounded-2xl rounded-tl-sm shadow-[0_2px_12px_rgb(0,0,0,0.03)] border border-gray-100 w-full md:w-auto">
-          <p class="text-jalaspe-blue text-sm leading-relaxed">
-            ¡Hola! Soy tu Agente JalasPe. Estoy listo para ayudarte a armar tu próximo plan. ¿A dónde te gustaría ir o qué tipo de experiencia buscas hoy?
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-start justify-end max-w-3xl mx-auto w-full">
-        <div class="mr-4 bg-jalaspe-blue p-5 rounded-2xl rounded-tr-sm shadow-md shadow-jalaspe-blue/10 w-full md:w-auto">
-          <p class="text-white text-sm leading-relaxed">
-            Quiero organizar un viaje familiar por Ica, Paracas y Nazca.
-          </p>
-        </div>
-        <div class="w-10 h-10 rounded-xl bg-jalaspe-turquoise text-white flex items-center justify-center text-sm font-bold shadow-sm flex-shrink-0">
-          {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
-        </div>
-      </div>
-
-      <div class="flex items-start max-w-3xl mx-auto w-full">
-        <div class="w-10 h-10 rounded-xl bg-jalaspe-blue text-jalaspe-lime flex items-center justify-center font-bold shadow-sm flex-shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-        </div>
-        <div class="ml-4 bg-white p-5 rounded-2xl rounded-tl-sm shadow-[0_2px_12px_rgb(0,0,0,0.03)] border border-gray-100 w-full md:w-auto">
-          <p class="text-jalaspe-blue text-sm leading-relaxed mb-3">
-            ¡Excelente elección! La ruta del sur es perfecta para ir en familia. Combina historia, vida marina y mucha aventura.
-          </p>
-          <p class="text-jalaspe-blue text-sm font-semibold mb-2">
-            Para armar el plan ideal y calcular bien los tiempos, necesito un par de detalles:
-          </p>
-          <ul class="list-disc pl-5 text-jalaspe-grey text-sm space-y-1">
-            <li>¿Cuántos días exactos tienen pensado viajar?</li>
-            <li>¿Cuentan con movilidad propia o prefieren opciones de transporte guiado?</li>
-          </ul>
-        </div>
-      </div>
-      <div class="h-6"></div>
-    </div>
-
-    <!-- Input Box -->
-    <div class="p-4 bg-white border-t border-gray-100 w-full">
-      <form class="max-w-3xl mx-auto relative flex items-center">
-        <button type="button" class="absolute left-3 text-gray-400 hover:text-jalaspe-turquoise transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+      <!-- Cabecera Móvil del Cajón -->
+      <div class="lg:hidden p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h3 class="font-bold text-jalaspe-blue">Resumen en vivo</h3>
+        <button (click)="toggleResumenMobile()" class="p-2 bg-white rounded-full text-gray-400 hover:text-gray-700 shadow-sm border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
-        <input type="text" class="w-full pl-12 pr-14 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/10 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400 text-sm shadow-inner" placeholder="Escribe tu respuesta aquí..." required>
-        <button type="submit" class="absolute right-2 w-10 h-10 rounded-xl bg-jalaspe-blue hover:bg-[#00223a] text-white flex items-center justify-center transition-all shadow-md group">
-          <svg class="w-5 h-5 ml-0.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-        </button>
-      </form>
-      <div class="text-center mt-2">
-        <span class="text-[10px] text-gray-400">Jalas.Pe puede cometer errores. Verifica la información importante de tu plan.</span>
       </div>
-    </div>
-  </main>
+
+      <!-- Título del Plan y Crew -->
+      <div class="p-5 sm:p-6 border-b border-gray-100">
+        <h3 class="text-xl font-bold text-jalaspe-blue mb-1 hidden lg:block">{{ nombrePlan }}</h3>
+        <p class="text-xs font-semibold text-jalaspe-turquoise uppercase tracking-wider mb-5">
+          Estado: <span *ngIf="estadoPlan === 'en_progreso'" class="text-orange-500">En Progreso</span>
+                  <span *ngIf="estadoPlan === 'completado'" class="text-blue-500">Esperando Aprobación</span>
+                  <span *ngIf="estadoPlan === 'aprobado'" class="text-jalaspe-lime">Plan Aprobado</span>
+        </p>
+
+        <!-- Participantes -->
+        <div class="flex items-center justify-between">
+          <div class="flex -space-x-3">
+            <div *ngFor="let persona of participantes" [class]="'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ' + persona.color" [title]="persona.nombre">
+              {{ persona.inicial }}
+            </div>
+            <button (click)="agregarInvitado()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-500 border-2 border-white hover:bg-gray-200 transition-colors z-10">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </button>
+          </div>
+          <span class="text-xs font-medium text-gray-400">{{ participantes.length }} confirmados</span>
+        </div>
+      </div>
+
+      <!-- Protocolo (Línea de tiempo) -->
+      <div class="flex-1 overflow-y-auto p-5 sm:p-6 pb-24 lg:pb-6">
+        <h4 class="text-sm font-bold text-gray-900 mb-6">Progreso del Plan</h4>
+        
+        <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+          
+          <div *ngFor="let paso of protocolo" class="relative flex items-start">
+            <div class="flex items-center justify-center w-6 h-6 rounded-full border-2 border-white bg-white shadow flex-shrink-0 mr-4 z-10"
+                 [ngClass]="{'bg-jalaspe-lime text-white border-jalaspe-lime': paso.estado === 'completado', 
+                             'bg-white border-jalaspe-blue': paso.estado === 'en_progreso',
+                             'bg-gray-100 border-gray-200': paso.estado === 'pendiente'}">
+              <svg *ngIf="paso.estado === 'completado'" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+              <div *ngIf="paso.estado === 'en_progreso'" class="w-2 h-2 rounded-full bg-jalaspe-blue animate-ping"></div>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <h5 class="text-sm font-bold" [ngClass]="{'text-gray-900': paso.estado !== 'pendiente', 'text-gray-400': paso.estado === 'pendiente'}">
+                {{ paso.titulo }}
+              </h5>
+              <p class="text-xs mt-1 leading-snug" [ngClass]="{'text-gray-600': paso.estado === 'completado', 'text-jalaspe-blue font-medium': paso.estado === 'en_progreso', 'text-gray-400': paso.estado === 'pendiente'}">
+                {{ paso.resumen }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total y Acciones -->
+      <div class="p-5 sm:p-6 bg-gray-50 border-t border-gray-100">
+        <div class="flex justify-between items-end mb-4 sm:mb-6">
+          <span class="text-xs sm:text-sm text-gray-500 font-medium">Aprox. por persona</span>
+          <span class="text-xl sm:text-2xl font-black text-jalaspe-blue">{{ presupuestoEstimado }}</span>
+        </div>
+
+        <button *ngIf="estadoPlan === 'en_progreso'" disabled class="w-full py-3 rounded-xl bg-gray-200 text-gray-500 font-bold text-sm cursor-not-allowed">
+          Completando plan...
+        </button>
+
+        <button *ngIf="estadoPlan === 'completado' || estadoPlan === 'aprobado'" (click)="verPlanDetallado()" class="w-full py-3 rounded-xl bg-white border border-gray-200 hover:border-jalaspe-blue text-jalaspe-blue font-bold text-sm shadow-sm transition-colors mb-3 flex justify-center items-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          Plan Detallado
+        </button>
+
+        <button *ngIf="estadoPlan === 'aprobado'" (click)="pagarMiParte()" class="w-full py-3 rounded-xl bg-jalaspe-lime hover:bg-[#b5e024] text-jalaspe-blue font-extrabold text-sm shadow-md transition-transform flex justify-center items-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+          Pagar mi parte
+        </button>
+      </div>
+
+    </aside>
+  </div>
 </div>
