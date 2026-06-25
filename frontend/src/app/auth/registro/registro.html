@@ -1,0 +1,47 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 font-sans px-4">
+  <div class="bg-white p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] max-w-md w-full border border-gray-100">
+    
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-jalaspe-blue tracking-tight mb-2">Crear Cuenta</h1>
+      <p class="text-jalaspe-grey text-sm">Únete y empieza a planificar</p>
+    </div>
+
+    <form (submit)="registrar($event)">
+      
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Nombre Completo</label>
+        <input type="text" id="nombre" 
+          class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400" 
+          placeholder="Jorge Quispe" required>
+      </div>
+
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Correo Electrónico</label>
+        <input type="email" id="email" 
+          class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400" 
+          placeholder="ejemplo@correo.com" required>
+      </div>
+
+      <div class="mb-8">
+        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Contraseña</label>
+        <input type="password" id="password" 
+          class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400" 
+          placeholder="••••••••" required minlength="6">
+        <p class="text-xs text-gray-400 mt-1.5">Mínimo 6 caracteres</p>
+      </div>
+
+      <button type="submit" 
+        class="w-full bg-jalaspe-blue hover:bg-[#00223a] text-white font-medium py-3.5 px-4 rounded-xl shadow-md shadow-jalaspe-blue/20 transition-all active:scale-[0.98]">
+        Registrarse
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-jalaspe-grey mt-8">
+      ¿Ya tienes cuenta? 
+      <a routerLink="/auth/login" class="text-jalaspe-blue font-semibold hover:text-jalaspe-lime transition-colors">
+        Inicia sesión
+      </a>
+    </p>
+
+  </div>
+</div>

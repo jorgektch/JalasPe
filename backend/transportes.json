@@ -1,0 +1,74 @@
+[
+  {
+    "empresa": "Cruz del Sur",
+    "ciudades_cobertura": ["Lima", "Huancayo", "Jauja"],
+    "buses": [
+      {
+        "id_bus": "BUS-CS-001",
+        "tipo": "Crucero Suite 180°",
+        "salida": "22:00",
+        "precio_asiento_soles": 95.0,
+        "asientos_disponibles": 12
+      },
+      {
+        "id_bus": "BUS-CS-002",
+        "tipo": "Crucero VIP 160°",
+        "salida": "08:00",
+        "precio_asiento_soles": 65.0,
+        "asientos_disponibles": 25
+      }
+    ]
+  },
+  {
+    "empresa": "Movil Bus",
+    "ciudades_cobertura": ["Lima", "Huancayo"],
+    "buses": [
+      {
+        "id_bus": "BUS-MB-001",
+        "tipo": "Ejecutivo VIP",
+        "salida": "21:30",
+        "precio_asiento_soles": 70.0,
+        "asientos_disponibles": 18
+      }
+    ]
+  },
+  {
+    "empresa": "Expreso Apocalipsis",
+    "ciudades_cobertura": ["Lima", "Huancayo", "Tarma"],
+    "buses": [
+      {
+        "id_bus": "BUS-AP-001",
+        "tipo": "Bus Cama",
+        "salida": "23:00",
+        "precio_asiento_soles": 50.0,
+        "asientos_disponibles": 30
+      }
+    ]
+  },
+  {
+    "empresa": "Megalodon Tours",
+    "ciudades_cobertura": ["Lima", "Huancayo", "Ayacucho"],
+    "buses": [
+      {
+        "id_bus": "BUS-MG-001",
+        "tipo": "Panorámico",
+        "salida": "09:00",
+        "precio_asiento_soles": 45.0,
+        "asientos_disponibles": 15
+      }
+    ]
+  },
+  {
+    "empresa": "Transportes Salazar",
+    "ciudades_cobertura": ["Lima", "Huancayo"],
+    "buses": [
+      {
+        "id_bus": "BUS-SZ-001",
+        "tipo": "Económico",
+        "salida": "10:00",
+        "precio_asiento_soles": 35.0,
+        "asientos_disponibles": 40
+      }
+    ]
+  }
+]

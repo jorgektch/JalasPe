@@ -431,3 +431,17 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django,angular,node
+
+# NUEVO
+
+# Entornos y Python
+backend/env/
+backend/__pycache__/
+*.pyc
+
+# Secretos (¡MUY IMPORTANTE!)
+backend/.env
+backend/firebase-credentials.json
+
+# Node modules (para cuando toquemos Angular)
+frontend/node_modules/

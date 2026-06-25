@@ -1,0 +1,73 @@
+<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue">
+
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Área Principal: Directorio -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa]">
+    
+    <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 z-0">
+      <h2 class="text-xl font-semibold text-jalaspe-blue">Directorio de Planes</h2>
+      <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 hidden sm:flex">
+        <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
+        <div class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm">
+          {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-8">
+      
+      <!-- Cabecera y Botón Nuevo -->
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Historial de Planes</h3>
+          <p class="text-jalaspe-grey mt-2">Continúa planificando tus próximas aventuras.</p>
+        </div>
+        <a routerLink="/app/plan" class="bg-jalaspe-blue hover:bg-[#00223a] text-white px-5 py-3 rounded-xl text-sm font-medium transition-all shadow-md shadow-jalaspe-blue/20 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Nuevo Plan
+        </a>
+      </div>
+
+      <!-- Lista de Planes Ordenada -->
+      <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden">
+        
+        <!-- Plan 1 -->
+        <a routerLink="/app/plan" class="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group cursor-pointer">
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-xl bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center mr-5 group-hover:scale-110 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            </div>
+            <div>
+              <h4 class="text-base font-bold text-jalaspe-blue group-hover:text-jalaspe-turquoise transition-colors">Ica, Paracas y Nazca</h4>
+              <p class="text-xs text-jalaspe-grey mt-1">Última edición: Hoy, 10:30 AM</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="px-3 py-1 bg-[#f8fbdb] text-[#8a9900] text-xs font-bold rounded-full mr-4 border border-[#e4ec98]">En progreso</span>
+            <svg class="w-5 h-5 text-gray-400 group-hover:text-jalaspe-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </div>
+        </a>
+
+        <!-- Plan 2 -->
+        <a routerLink="/app/plan" class="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group cursor-pointer">
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center mr-5 group-hover:scale-110 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            </div>
+            <div>
+              <h4 class="text-base font-bold text-gray-600 group-hover:text-jalaspe-turquoise transition-colors">Escapada a Huaraz</h4>
+              <p class="text-xs text-gray-400 mt-1">Última edición: 22 Jun 2026</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-full mr-4 border border-gray-200">Guardado</span>
+            <svg class="w-5 h-5 text-gray-400 group-hover:text-jalaspe-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </main>
+</div>

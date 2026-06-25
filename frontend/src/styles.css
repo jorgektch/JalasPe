@@ -1,0 +1,12 @@
+/* Importamos los estilos del Toastr PRIMERO */
+@import 'ngx-toastr/toastr';
+
+/* Luego dejamos las directivas de Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f0f4f8;
+  font-family: 'Poppins', sans-serif;
+}
