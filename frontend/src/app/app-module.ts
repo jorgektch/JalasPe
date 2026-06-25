@@ -6,11 +6,10 @@ import { ToastrModule } from 'ngx-toastr'; // Necesario
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
+import { Landing } from './landing/landing';
 
 @NgModule({
-  declarations: [
-    App
-  ],
+  declarations: [App, Landing],
   imports: [
     BrowserModule,
     BrowserAnimationsModule, // <-- Debe ir ANTES del ToastrModule
@@ -19,11 +18,9 @@ import { App } from './app';
       positionClass: 'toast-top-right', // <-- Esta es la clase mágica
       preventDuplicates: true,
     }),
-    AppRoutingModule
+    AppRoutingModule,
   ],
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-  ],
-  bootstrap: [App]
+  providers: [provideBrowserGlobalErrorListeners()],
+  bootstrap: [App],
 })
-export class AppModule { }
+export class AppModule {}
