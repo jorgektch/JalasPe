@@ -8,9 +8,9 @@
       <h2 class="text-xl font-semibold text-jalaspe-blue">Configuración de Cuenta</h2>
       <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 hidden sm:flex">
         <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
-        <div class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm">
+        <a routerLink="/app/perfil" class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm cursor-pointer hover:scale-105 transition-transform" title="Mi Perfil">
           {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
-        </div>
+        </a>
       </div>
     </header>
 

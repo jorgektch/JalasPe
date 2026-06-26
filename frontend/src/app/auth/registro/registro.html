@@ -1,9 +1,7 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-50 font-sans px-4">
     <div class="bg-white p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] max-w-md w-full border border-gray-100">
 
-        <!-- Cabecera de Registro -->
         <div class="text-center mb-8">
-            <!-- Botón sutil de regreso -->
             <a routerLink="/"
                 class="inline-flex items-center text-sm font-semibold text-jalaspe-grey hover:text-jalaspe-turquoise transition-colors mb-6 group">
                 <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none"
@@ -14,7 +12,6 @@
                 Volver al inicio
             </a>
 
-            <!-- Logo clickeable -->
             <a routerLink="/" class="block cursor-pointer hover:opacity-80 transition-opacity" title="Jalas.Pe Inicio">
                 <h1 class="text-4xl font-bold text-jalaspe-blue tracking-tight">Jalas<span
                         class="text-jalaspe-lime">.Pe</span></h1>
@@ -27,10 +24,10 @@
         <form (submit)="registrar($event)">
 
             <div class="mb-5">
-                <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Nombre Completo</label>
-                <input type="text" id="nombre"
+                <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Nombres</label>
+                <input type="text" id="nombres"
                     class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400"
-                    placeholder="Jorge Quispe" required>
+                    placeholder="Jorge" required>
             </div>
 
             <div class="mb-5">

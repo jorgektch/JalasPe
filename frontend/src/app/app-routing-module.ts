@@ -1,10 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Landing } from './landing/landing';
+import { AdminGuard } from './auth/guards/admin.guard'; // <-- 1. Importamos el guardián
 
 const routes: Routes = [
-  { path: '', component: Landing }, // La raíz muestra el Landing
-  { path: 'admin', loadChildren: () => import('./admin/admin-module').then((m) => m.AdminModule) },
+  { path: '', component: Landing }, 
+  { 
+    path: 'admin', 
+    loadChildren: () => import('./admin/admin-module').then((m) => m.AdminModule),
+    canActivate: [AdminGuard] // <-- 2. Le asignamos el guardián a toda la zona admin
+  },
   {
     path: 'app',
     loadChildren: () => import('./cliente/cliente-module').then((m) => m.ClienteModule),
@@ -15,9 +20,8 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
     scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled' // Importante para que el smooth scroll funcione
+    anchorScrolling: 'enabled' 
   })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
-

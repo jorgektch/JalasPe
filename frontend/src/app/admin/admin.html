@@ -1,1 +1,27 @@
-<p>admin works!</p>
+<!-- Fíjate en el pt-16 md:pt-0 en esta primera línea -->
+<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue overflow-hidden pt-16 md:pt-0">
+  
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa]">
+    
+    <!-- HEADER GLOBAL DEL ADMIN (Visible solo en Desktop) -->
+    <header class="hidden md:flex h-16 bg-white border-b border-gray-100 items-center justify-between px-8 z-0 flex-shrink-0">
+      <h2 class="text-xl font-semibold text-jalaspe-blue">Panel de Control</h2>
+      
+      <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+        <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
+        <!-- AQUÍ SE CORRIGIÓ LA RUTA A /admin/perfil -->
+        <a routerLink="/admin/perfil" class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm cursor-pointer hover:scale-105 transition-transform" title="Ir a Configuración">
+          {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'A' }}
+        </a>
+      </div>
+    </header>
+
+    <!-- ÁREA DINÁMICA -->
+    <div class="flex-1 overflow-y-auto p-8">
+      <router-outlet></router-outlet>
+    </div>
+
+  </main>
+</div>

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../auth/services/auth';
 
 @Component({
   selector: 'app-admin',
@@ -6,4 +7,15 @@ import { Component } from '@angular/core';
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })
-export class Admin {}
+export class Admin implements OnInit {
+  usuarioEmail: string | null = 'Cargando...';
+
+  constructor(private authService: AuthService) {}
+
+  async ngOnInit() {
+    const user = await this.authService.esperarUsuarioAutenticado();
+    if (user) {
+      this.usuarioEmail = user.email;
+    }
+  }
+}

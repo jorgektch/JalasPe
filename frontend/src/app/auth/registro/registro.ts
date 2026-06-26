@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
-import { ApiService } from '../../services/api.service'; // <-- Importamos nuestro ApiService
+import { ApiService } from '../../services/api.service'; 
 import { ToastrService } from 'ngx-toastr'; 
 
 @Component({
@@ -14,7 +14,7 @@ export class RegistroComponent {
 
   constructor(
     private authService: AuthService,
-    private apiService: ApiService, // <-- Inyectamos el ApiService
+    private apiService: ApiService, 
     private router: Router,
     private toastr: ToastrService 
   ) { }
@@ -22,22 +22,32 @@ export class RegistroComponent {
   async registrar(event: Event) {
     event.preventDefault(); 
     
+    // Capturamos los campos
+    const nombres = (document.getElementById('nombres') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const password = (document.getElementById('password') as HTMLInputElement).value;
 
     try {
+      // 1. Lo registramos en Firebase Auth
       await this.authService.registro(email, password);
       
-      // === NUEVO: Registramos al usuario en la BD de FastAPI ===
+      // 2. Creamos su documento base en Firestore
       await this.apiService.sincronizarUsuario();
 
-      this.toastr.success("Cuenta creada correctamente", "¡Bienvenido a JalasPe!");
-      this.router.navigate(['/app']);
-    } catch (error: any) {
-      // Normalizamos el código de error
-      // A veces viene en error.code, a veces viene dentro del mensaje o la respuesta
-      const errorCode = error.code || (error.error?.message) || "";
+      // 3. LA MAGIA: Guardamos automáticamente sus nombres en el perfil
+      await this.apiService.actualizarPerfil({ nombres: nombres });
 
+      this.toastr.success("Cuenta creada correctamente", "¡Bienvenido a JalasPe!");
+
+      // 4. Redirección Inteligente
+      if (email === 'admin@jalas.pe') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/app']);
+      }
+
+    } catch (error: any) {
+      const errorCode = error.code || (error.error?.message) || "";
       console.error("Error detectado:", error);
 
       if (errorCode === 'auth/email-already-in-use' || errorCode === 'EMAIL_EXISTS') {
