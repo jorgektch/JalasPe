@@ -49,7 +49,10 @@
                 </div>
             </a>
             <div class="ml-11 mt-1 space-y-1 border-l-2 border-gray-100 pl-3 py-1">
-                <a routerLink="/app/plan" (click)="cerrarMenu()" class="block text-sm text-jalaspe-grey hover:text-jalaspe-blue truncate py-1.5 transition-colors">Ica, Paracas y Nazca</a>
+                <a *ngFor="let plan of misPlanes" [routerLink]="['/app/plan', plan.id]" (click)="cerrarMenu()" routerLinkActive="text-jalaspe-blue font-semibold" class="block text-sm text-jalaspe-grey hover:text-jalaspe-blue truncate py-1.5 transition-colors">
+                    {{ plan.titulo }}
+                </a>
+                <p *ngIf="misPlanes.length === 0" class="text-xs text-gray-400 italic py-1">Sin planes recientes</p>
             </div>
         </div>
 

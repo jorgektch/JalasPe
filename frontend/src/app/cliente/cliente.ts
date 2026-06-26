@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/services/auth'; // Asegúrate de que la ruta sea correcta
+import { AuthService } from '../auth/services/auth'; 
+import { ApiService } from '../services/api.service'; 
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -10,22 +11,39 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ClienteComponent implements OnInit {
   usuarioEmail: string | null = 'Cargando...';
+  cargando: boolean = false; 
 
   constructor(
     private authService: AuthService,
+    private apiService: ApiService, 
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef 
   ) {}
 
-  ngOnInit() {
-    // Obtenemos los datos del usuario logeado
-    const user = this.authService.getUsuarioActual();
+  // <-- AÑADIMOS ASYNC AQUÍ Y CAMBIAMOS LA FUNCIÓN
+  async ngOnInit() {
+    const user = await this.authService.esperarUsuarioAutenticado();
     if (user) {
       this.usuarioEmail = user.email;
     } else {
-      // Si por alguna razón entra aquí sin estar logeado, lo devolvemos al login
-      // (Más adelante crearemos un "Guardián" para proteger esta ruta mejor)
       this.router.navigate(['/auth/login']);
+    }
+  }
+
+  async crearNuevoPlan() {
+    try {
+      this.cargando = true;
+      this.cdr.detectChanges(); 
+
+      const res = await this.apiService.crearPlan('Mi Nueva Aventura', 'Sin definir');
+      this.toastr.success("¡Plan creado! Empecemos a organizar.", "Éxito");
+      
+      this.router.navigate(['/app/plan', res.id]); 
+    } catch (error) {
+      this.toastr.error("Hubo un error al crear el plan", "Error");
+      this.cargando = false;
+      this.cdr.detectChanges();
     }
   }
 

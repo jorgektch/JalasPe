@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth'; // Nuestra ruta actualizada
-import { ToastrService } from 'ngx-toastr'; // Importa esto
+import { AuthService } from '../services/auth'; 
+import { ApiService } from '../../services/api.service'; // <-- Importamos nuestro ApiService
+import { ToastrService } from 'ngx-toastr'; 
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,7 @@ export class LoginComponent {
   
   constructor(
     private authService: AuthService,
+    private apiService: ApiService, // <-- Inyectamos el ApiService
     private router: Router,
     private toastr: ToastrService) {}
 
@@ -23,6 +25,10 @@ export class LoginComponent {
 
     try {
       await this.authService.login(email, password);
+      
+      // === NUEVO: Avisamos a FastAPI que el usuario entró ===
+      await this.apiService.sincronizarUsuario();
+      
       this.toastr.success("¡Bienvenido a JalasPe!", "Login Exitoso");
       // Al ser exitoso, lo enviamos al panel del cliente
       this.router.navigate(['/app']);

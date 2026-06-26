@@ -8,7 +8,7 @@ import { PerfilComponent } from './perfil/perfil';
 
 const routes: Routes = [
   { path: '', component: ClienteComponent },
-  { path: 'plan', component: PlanComponent },
+  { path: 'plan/:id', component: PlanComponent },
   { path: 'planes', component: PlanesComponent },
   { path: 'perfil', component: PerfilComponent } // Nueva ruta
 ];

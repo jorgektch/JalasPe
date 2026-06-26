@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
-import { ToastrService } from 'ngx-toastr'; // Importamos el servicio
+import { ApiService } from '../../services/api.service'; // <-- Importamos nuestro ApiService
+import { ToastrService } from 'ngx-toastr'; 
 
 @Component({
   selector: 'app-registro',
@@ -13,8 +14,9 @@ export class RegistroComponent {
 
   constructor(
     private authService: AuthService,
+    private apiService: ApiService, // <-- Inyectamos el ApiService
     private router: Router,
-    private toastr: ToastrService // Inyectamos el Toastr
+    private toastr: ToastrService 
   ) { }
 
   async registrar(event: Event) {
@@ -25,6 +27,10 @@ export class RegistroComponent {
 
     try {
       await this.authService.registro(email, password);
+      
+      // === NUEVO: Registramos al usuario en la BD de FastAPI ===
+      await this.apiService.sincronizarUsuario();
+
       this.toastr.success("Cuenta creada correctamente", "¡Bienvenido a JalasPe!");
       this.router.navigate(['/app']);
     } catch (error: any) {

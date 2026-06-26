@@ -1,4 +1,4 @@
-<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue">
+<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue relative">
 
   <!-- Sidebar -->
   <app-sidebar></app-sidebar>
@@ -24,45 +24,50 @@
           <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Historial de Planes</h3>
           <p class="text-jalaspe-grey mt-2">Continúa planificando tus próximas aventuras.</p>
         </div>
-        <a routerLink="/app/plan" class="bg-jalaspe-blue hover:bg-[#00223a] text-white px-5 py-3 rounded-xl text-sm font-medium transition-all shadow-md shadow-jalaspe-blue/20 flex items-center">
+        <button (click)="crearNuevoPlan()" class="bg-jalaspe-blue text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md hover:bg-[#001f33] transition-colors flex items-center cursor-pointer">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           Nuevo Plan
-        </a>
+        </button>
       </div>
-
-      <!-- Lista de Planes Ordenada -->
-      <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden">
+      
+      <!-- Lista de Planes Dinámica -->
+      <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden min-h-[150px] relative">
         
-        <!-- Plan 1 -->
-        <a routerLink="/app/plan" class="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group cursor-pointer">
+        <!-- Estado: Cargando -->
+        <div *ngIf="cargando" class="flex flex-col items-center justify-center p-10 text-gray-400">
+           <svg class="animate-spin h-8 w-8 mb-3 text-jalaspe-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+           <p class="text-sm font-medium">Buscando tus aventuras...</p>
+        </div>
+
+        <!-- Estado: Sin Planes -->
+        <div *ngIf="!cargando && misPlanes.length === 0" class="flex flex-col items-center justify-center p-10 text-center">
+          <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 text-gray-300">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          </div>
+          <p class="text-gray-500 font-medium">Aún no tienes ningún plan.</p>
+          <p class="text-sm text-gray-400 mt-1">Presiona "Nuevo Plan" para comenzar a usar Jalas.Pe</p>
+        </div>
+
+        <!-- Tarjetas Generadas por *ngFor -->
+        <a *ngFor="let plan of misPlanes" [routerLink]="['/app/plan', plan.id]" class="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group cursor-pointer">
           <div class="flex items-center">
             <div class="w-12 h-12 rounded-xl bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center mr-5 group-hover:scale-110 transition-transform">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
             </div>
             <div>
-              <h4 class="text-base font-bold text-jalaspe-blue group-hover:text-jalaspe-turquoise transition-colors">Ica, Paracas y Nazca</h4>
-              <p class="text-xs text-jalaspe-grey mt-1">Última edición: Hoy, 10:30 AM</p>
+              <h4 class="text-base font-bold text-jalaspe-blue group-hover:text-jalaspe-turquoise transition-colors">{{ plan.titulo || 'Plan sin título' }}</h4>
+              <p class="text-xs text-jalaspe-grey mt-1">Destino: {{ plan.destino || 'Sin definir' }}</p>
             </div>
           </div>
           <div class="flex items-center">
-            <span class="px-3 py-1 bg-[#f8fbdb] text-[#8a9900] text-xs font-bold rounded-full mr-4 border border-[#e4ec98]">En progreso</span>
-            <svg class="w-5 h-5 text-gray-400 group-hover:text-jalaspe-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-          </div>
-        </a>
+            <span *ngIf="plan.estado === 'progreso'" class="px-3 py-1 bg-[#f8fbdb] text-[#8a9900] text-xs font-bold rounded-full mr-4 border border-[#e4ec98] hidden sm:block">En progreso</span>
+            <span *ngIf="plan.estado === 'guardado'" class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-full mr-4 border border-gray-200 hidden sm:block">Guardado</span>
+            
+            <!-- CAMBIAMOS A ABRIR EL MODAL -->
+            <button (click)="abrirModalEliminar(plan.id, $event)" class="mr-3 p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors focus:outline-none" title="Eliminar plan">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
 
-        <!-- Plan 2 -->
-        <a routerLink="/app/plan" class="flex items-center justify-between p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors group cursor-pointer">
-          <div class="flex items-center">
-            <div class="w-12 h-12 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center mr-5 group-hover:scale-110 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-            </div>
-            <div>
-              <h4 class="text-base font-bold text-gray-600 group-hover:text-jalaspe-turquoise transition-colors">Escapada a Huaraz</h4>
-              <p class="text-xs text-gray-400 mt-1">Última edición: 22 Jun 2026</p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <span class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-full mr-4 border border-gray-200">Guardado</span>
             <svg class="w-5 h-5 text-gray-400 group-hover:text-jalaspe-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
           </div>
         </a>
@@ -70,4 +75,38 @@
       </div>
     </div>
   </main>
+
+  <!-- ================= MODAL DE ELIMINACIÓN (Tailwind CSS) ================= -->
+  <div *ngIf="mostrarModalEliminar" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+    <!-- Backdrop oscurecido -->
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" (click)="!eliminando ? cerrarModalEliminar() : null"></div>
+
+    <!-- Panel del Modal -->
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 overflow-hidden transform transition-all">
+      <div class="p-6 sm:p-8 text-center">
+        <!-- Ícono de Alerta -->
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-6">
+          <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </div>
+
+        <h3 class="text-xl font-bold text-gray-900 mb-2">¿Eliminar este plan?</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">
+          Esta acción es permanente y no se puede deshacer. Se borrará todo el itinerario y el progreso de la Inteligencia Artificial.
+        </p>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">
+        <button type="button" [disabled]="eliminando" (click)="cerrarModalEliminar()" class="mt-3 sm:mt-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors disabled:opacity-50">
+          Cancelar
+        </button>
+        <button type="button" [disabled]="eliminando" (click)="confirmarEliminacion()" class="w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
+          <!-- Spinner animado que aparece al eliminar -->
+          <svg *ngIf="eliminando" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

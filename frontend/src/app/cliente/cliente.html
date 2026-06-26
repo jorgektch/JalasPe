@@ -1,56 +1,91 @@
 <div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue">
 
-  <!-- Sidebar (Modo Activo en: Mi Panel) -->
-  <app-sidebar></app-sidebar>
+    <!-- Sidebar (Modo Activo en: Mi Panel) -->
+    <app-sidebar></app-sidebar>
 
-  <main class="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa]">
-    <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 z-0">
-      <h2 class="text-xl font-semibold text-jalaspe-blue">Resumen</h2>
-      <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-        <span class="text-sm text-jalaspe-grey mr-2">Hola,</span>
-        <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
-        <div class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm">
-          {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
+    <main class="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa]">
+        <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 z-0">
+            <h2 class="text-xl font-semibold text-jalaspe-blue">Resumen</h2>
+            <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                <span class="text-sm text-jalaspe-grey mr-2">Hola,</span>
+                <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
+                <div
+                    class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm">
+                    {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            <div class="mb-8">
+                <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">¡Bienvenido a tu panel! 🌍</h3>
+                <p class="text-jalaspe-grey mt-2">¿Qué destino descubriremos hoy?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                <!-- Tarjeta 1 (AHORA CON CLICK Y EFECTO DE CARGA) -->
+                <a (click)="crearNuevoPlan()"
+                    class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg hover:border-jalaspe-blue/20 transition-all cursor-pointer group block relative overflow-hidden">
+
+                    <!-- Capa de Carga Overlay (Aparece al hacer clic) -->
+                    <div *ngIf="cargando"
+                        class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+                        <svg class="animate-spin h-8 w-8 mb-2 text-jalaspe-blue" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <span class="text-xs font-bold text-jalaspe-blue">Creando...</span>
+                    </div>
+
+                    <div
+                        class="w-14 h-14 rounded-xl bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-jalaspe-blue">Nuevo Plan</h4>
+                    <p class="text-sm text-jalaspe-grey mt-1.5 leading-relaxed">Crea un itinerario con Inteligencia
+                        Artificial.</p>
+                </a>
+
+                <!-- Tarjeta 2 -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-all">
+                    <div
+                        class="w-14 h-14 rounded-xl bg-jalaspe-turquoise/10 text-jalaspe-turquoise flex items-center justify-center mb-5">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-jalaspe-blue">Próximo Plan</h4>
+                    <p class="text-sm text-jalaspe-grey mt-1.5 leading-relaxed">Aún no tienes planes programados.</p>
+                </div>
+
+                <!-- Tarjeta 3 -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-all">
+                    <div
+                        class="w-14 h-14 rounded-xl bg-jalaspe-lime/20 text-[#8a9900] flex items-center justify-center mb-5">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-jalaspe-blue">Completar Perfil</h4>
+                    <p class="text-sm text-jalaspe-grey mt-1.5 leading-relaxed">Añade tus preferencias para mejores
+                        recomendaciones.</p>
+                </div>
+
+            </div>
         </div>
-      </div>
-    </header>
-
-    <div class="flex-1 overflow-y-auto p-8">
-      <div class="mb-8">
-        <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">¡Bienvenido a tu panel! 🌍</h3>
-        <p class="text-jalaspe-grey mt-2">¿Qué destino descubriremos hoy?</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        
-        <!-- Tarjeta 1 (AHORA CON ENLACE) -->
-        <a routerLink="/app/plan" class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg hover:border-jalaspe-blue/20 transition-all cursor-pointer group block">
-          <div class="w-14 h-14 rounded-xl bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          </div>
-          <h4 class="text-lg font-bold text-jalaspe-blue">Nuevo Plan</h4>
-          <p class="text-sm text-jalaspe-grey mt-1.5 leading-relaxed">Crea un itinerario con Inteligencia Artificial.</p>
-        </a>
-
-        <!-- Tarjeta 2 -->
-        <div class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-all">
-          <div class="w-14 h-14 rounded-xl bg-jalaspe-turquoise/10 text-jalaspe-turquoise flex items-center justify-center mb-5">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-          </div>
-          <h4 class="text-lg font-bold text-jalaspe-blue">Próximo Plan</h4>
-          <p class="text-sm text-jalaspe-grey mt-1.5 leading-relaxed">Aún no tienes planes programados.</p>
-        </div>
-
-        <!-- Tarjeta 3 -->
-        <div class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-all">
-          <div class="w-14 h-14 rounded-xl bg-jalaspe-lime/20 text-[#8a9900] flex items-center justify-center mb-5">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          </div>
-          <h4 class="text-lg font-bold text-jalaspe-blue">Completar Perfil</h4>
-          <p class="text-sm text-jalaspe-grey mt-1.5 leading-relaxed">Añade tus preferencias para mejores recomendaciones.</p>
-        </div>
-
-      </div>
-    </div>
-  </main>
+    </main>
 </div>

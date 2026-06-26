@@ -1,5 +1,5 @@
 export const environment = {
-  production: true,
+  production: false,
   firebaseConfig: {
     apiKey: "AIzaSyBwxIxfVsTVmHNPzuPAOBTggv15cXFAG44",
     authDomain: "jalaspe.firebaseapp.com",
@@ -9,6 +9,6 @@ export const environment = {
     appId: "1:229008340318:web:c73702b3cbff5c39ec8bcf",
     measurementId: "G-8Q70PRHCSF"
   },
-  // Apuntamos temporalmente al puerto 8000 (FastAPI) mientras desarrollamos en local
+  // Esta URL conecta tu Angular local con tu FastAPI local
   apiUrl: "http://localhost:8000" 
 };
