@@ -16,6 +16,9 @@ export class Usuarios implements OnInit {
   guardando = false;
   eliminando = false;
 
+  // NUEVO: Variable de Búsqueda
+  busqueda: string = '';
+
   // Variables de Modal (Usuarios)
   mostrarModalEditarUsuario = false;
   mostrarModalEliminarUsuario = false;
@@ -55,11 +58,39 @@ export class Usuarios implements OnInit {
 
   cambiarTab(tab: 'usuarios' | 'planes') {
     this.tabActiva = tab;
+    this.busqueda = ''; // Limpiamos la búsqueda al cambiar de pestaña
   }
 
   obtenerEmailUsuario(uid: string): string {
     const usuario = this.usuarios.find(u => u.uid === uid);
     return usuario ? usuario.email : 'Usuario Desconocido';
+  }
+
+  // ==========================
+  // FILTROS DE BÚSQUEDA DINÁMICOS
+  // ==========================
+  get usuariosFiltrados() {
+    if (!this.busqueda) return this.usuarios;
+    const termino = this.busqueda.toLowerCase();
+    
+    return this.usuarios.filter(u => {
+      const nombreCompleto = `${u.nombres || ''} ${u.apellido_paterno || ''} ${u.apellido_materno || ''}`.toLowerCase();
+      return (u.email && u.email.toLowerCase().includes(termino)) ||
+             (u.uid && u.uid.toLowerCase().includes(termino)) ||
+             nombreCompleto.includes(termino);
+    });
+  }
+
+  get planesFiltrados() {
+    if (!this.busqueda) return this.planes;
+    const termino = this.busqueda.toLowerCase();
+    
+    return this.planes.filter(p => {
+      const creadorEmail = this.obtenerEmailUsuario(p.uid).toLowerCase();
+      return (p.titulo && p.titulo.toLowerCase().includes(termino)) ||
+             (p.destino && p.destino.toLowerCase().includes(termino)) ||
+             creadorEmail.includes(termino);
+    });
   }
 
   // ==========================
