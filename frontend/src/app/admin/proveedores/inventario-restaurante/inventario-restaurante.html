@@ -1,0 +1,97 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1">
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 sticky top-24">
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-4">Agregar a la Carta</h3>
+            <form (submit)="guardarPlato($event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombre del Plato o Bebida</label>
+                    <input type="text" [(ngModel)]="nuevoPlato.nombre" name="nombre" placeholder="Ej. Lomo Saltado con Arroz" class="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descripción / Ingredientes</label>
+                    <textarea [(ngModel)]="nuevoPlato.descripcion" name="descripcion" placeholder="Ej. Trozos de lomo fino salteados con cebolla y tomate..." rows="2" class="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue resize-none"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Categoría</label>
+                        <select [(ngModel)]="nuevoPlato.categoria" name="categoria" class="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-medium" required>
+                            <option value="Entrada">Entrada</option>
+                            <option value="Plato de Fondo">Plato de Fondo</option>
+                            <option value="Postre">Postre</option>
+                            <option value="Bebida">Bebida</option>
+                            <option value="Combo">Combo / Menú</option>
+                        </select>
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio (S/)</label>
+                        <input type="number" [(ngModel)]="nuevoPlato.precio" name="precio" min="1" step="0.5" class="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-black text-right" required>
+                    </div>
+                </div>
+                <button type="submit" [disabled]="guardando" class="w-full py-2.5 bg-orange-500 text-white text-sm font-bold rounded-xl hover:bg-orange-600 transition-colors flex justify-center items-center mt-2 shadow-md">
+                    {{ guardando ? 'Guardando...' : '+ Agregar a la Carta' }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div *ngIf="cargando" class="py-10 text-center text-gray-400 animate-pulse">Cargando carta...</div>
+
+        <div *ngIf="!cargando && platos.length === 0" class="bg-gray-50 border border-gray-100 border-dashed rounded-2xl py-12 flex flex-col items-center justify-center text-gray-400">
+            <svg class="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            <p>Aún no hay platos en la carta.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let p of platos" class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-200 hover:shadow-md transition-all relative group flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border"
+                            [ngClass]="{
+                            'bg-green-50 text-green-600 border-green-100': p.categoria === 'Entrada',
+                            'bg-orange-50 text-orange-600 border-orange-100': p.categoria === 'Plato de Fondo',
+                            'bg-pink-50 text-pink-600 border-pink-100': p.categoria === 'Postre',
+                            'bg-blue-50 text-blue-600 border-blue-100': p.categoria === 'Bebida',
+                            'bg-purple-50 text-purple-600 border-purple-100': p.categoria === 'Combo'}">
+                            {{ p.categoria }}
+                        </span>
+                        <!-- BOTÓN DE ELIMINAR RESTAURADO -->
+                        <button (click)="abrirModalEliminar(p.id)" class="text-gray-400 hover:text-red-500 transition-colors p-1 -mt-1 -mr-1 rounded-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <h4 class="text-jalaspe-blue font-bold text-base leading-tight mb-1">{{ p.nombre }}</h4>
+                    <p class="text-xs text-gray-500 line-clamp-2 mb-4">{{ p.descripcion }}</p>
+                </div>
+                <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                    <div class="flex items-center">
+                        <div class="w-1.5 h-1.5 rounded-full mr-1.5" [ngClass]="p.estado === 'Disponible' ? 'bg-jalaspe-lime' : 'bg-gray-300'"></div>
+                        <span class="text-[10px] text-gray-400 uppercase font-bold">{{ p.estado }}</span>
+                    </div>
+                    <p class="text-lg font-black text-orange-500">S/ {{ p.precio }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div *ngIf="mostrarModalEliminar" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-0">
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" (click)="!eliminandoItem ? cerrarModalEliminar() : null"></div>
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-2">¿Estás seguro?</h3>
+            <p class="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer. El elemento será eliminado permanentemente del catálogo.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" [disabled]="eliminandoItem" (click)="cerrarModalEliminar()" class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">Cancelar</button>
+                <button type="button" [disabled]="eliminandoItem" (click)="confirmarEliminacion()" class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors flex items-center justify-center">
+                    <svg *ngIf="eliminandoItem" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    {{ eliminandoItem ? 'Eliminando...' : 'Sí, eliminar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

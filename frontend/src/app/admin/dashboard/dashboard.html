@@ -1,1 +1,97 @@
-<p>dashboard works!</p>
+<div class="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+        <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Centro de Comando</h3>
+        <p class="text-jalaspe-grey mt-2">Bienvenido al panel de administración general de JalasPe.</p>
+    </div>
+</div>
+
+<!-- ================= ESTADO DE CARGA ================= -->
+<div *ngIf="cargando" class="max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[40vh]">
+    <svg class="animate-spin h-10 w-10 text-jalaspe-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <p class="text-jalaspe-grey font-medium text-lg">Sincronizando métricas del sistema...</p>
+</div>
+
+<!-- ================= CONTENIDO DEL DASHBOARD ================= -->
+<div *ngIf="!cargando" class="max-w-6xl mx-auto animate-in fade-in duration-300 space-y-8">
+
+    <!-- MÉTRICAS (TARJETAS) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Tarjeta: Usuarios -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 hover:-translate-y-1 transition-transform">
+            <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 flex-shrink-0">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Usuarios</p>
+                <h4 class="text-3xl font-black text-jalaspe-blue leading-none">{{ stats.usuarios }}</h4>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Proveedores -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 hover:-translate-y-1 transition-transform">
+            <div class="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 flex-shrink-0">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Proveedores</p>
+                <h4 class="text-3xl font-black text-jalaspe-blue leading-none">{{ stats.proveedores }}</h4>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Itinerarios -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 hover:-translate-y-1 transition-transform">
+            <div class="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 flex-shrink-0">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Itinerarios IA</p>
+                <h4 class="text-3xl font-black text-jalaspe-blue leading-none">{{ stats.itinerarios }}</h4>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Países -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 hover:-translate-y-1 transition-transform">
+            <div class="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center text-purple-500 flex-shrink-0">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Países Activos</p>
+                <h4 class="text-3xl font-black text-jalaspe-blue leading-none">{{ stats.paisesHabilitados }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCESOS DIRECTOS -->
+    <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+        <h4 class="text-lg font-bold text-jalaspe-blue mb-6 border-b border-gray-100 pb-3">Accesos Directos</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <a routerLink="/admin/proveedores" class="group p-5 rounded-2xl border border-gray-200 hover:border-jalaspe-blue bg-gray-50/50 hover:bg-blue-50/20 transition-all cursor-pointer block">
+                <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 group-hover:text-jalaspe-blue group-hover:border-jalaspe-blue transition-colors mb-4 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                <h5 class="font-bold text-jalaspe-blue mb-1">Nuevo Proveedor</h5>
+                <p class="text-xs text-gray-500 line-clamp-2">Añade hoteles, restaurantes, agencias de viaje o empresas de transporte.</p>
+            </a>
+
+            <a routerLink="/admin/configuracion" class="group p-5 rounded-2xl border border-gray-200 hover:border-purple-500 bg-gray-50/50 hover:bg-purple-50/20 transition-all cursor-pointer block">
+                <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 group-hover:text-purple-500 group-hover:border-purple-500 transition-colors mb-4 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <h5 class="font-bold text-jalaspe-blue mb-1">Ajustes e IAs</h5>
+                <p class="text-xs text-gray-500 line-clamp-2">Edita las claves de los LLMs, el mensaje de bienvenida y activa el modo mantenimiento.</p>
+            </a>
+
+            <a routerLink="/admin/usuarios" class="group p-5 rounded-2xl border border-gray-200 hover:border-orange-500 bg-gray-50/50 hover:bg-orange-50/20 transition-all cursor-pointer block">
+                <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 group-hover:text-orange-500 group-hover:border-orange-500 transition-colors mb-4 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h5 class="font-bold text-jalaspe-blue mb-1">Auditar Itinerarios</h5>
+                <p class="text-xs text-gray-500 line-clamp-2">Revisa y gestiona los viajes que la comunidad ha generado usando el agente de IA.</p>
+            </a>
+            
+        </div>
+    </div>
+</div>

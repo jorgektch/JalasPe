@@ -1,0 +1,158 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1">
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 sticky top-24">
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-4">Nueva Ruta de Viaje</h3>
+            <form (submit)="guardarRuta($event)" class="space-y-4">
+                <div class="flex flex-col gap-3 border border-gray-200 p-3 rounded-xl bg-white">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Ciudad de Origen</label>
+                        <select [(ngModel)]="nuevaRuta.origen" name="origen" class="w-full bg-transparent outline-none text-sm text-jalaspe-blue font-bold cursor-pointer" required>
+                            <option value="" disabled selected>Selecciona origen</option>
+                            <option *ngFor="let c of ciudadesGlobales" [value]="c">{{ c }}</option>
+                        </select>
+                    </div>
+                    <div class="h-px bg-gray-100 w-full relative flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-300 absolute bg-white px-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Ciudad de Destino</label>
+                        <select [(ngModel)]="nuevaRuta.destino" name="destino" class="w-full bg-transparent outline-none text-sm text-jalaspe-blue font-bold cursor-pointer" required>
+                            <option value="" disabled selected>Selecciona destino</option>
+                            <option *ngFor="let c of ciudadesGlobales" [value]="c">{{ c }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NUEVO GRID PARA FECHA, HORA Y PRECIO -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fecha Salida</label>
+                        <input type="date" [(ngModel)]="nuevaRuta.fecha_salida" name="fecha_salida" class="w-full px-2 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-xs text-jalaspe-blue font-medium" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Hora</label>
+                        <input type="time" [(ngModel)]="nuevaRuta.hora_salida" name="hora_salida" class="w-full px-2 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-xs text-jalaspe-blue font-medium" required>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio (S/)</label>
+                        <input type="number" [(ngModel)]="nuevaRuta.precio" name="precio" min="1" step="0.5" class="w-full px-2 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-xs text-jalaspe-blue font-black text-right" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tipo de Vehículo / Asiento</label>
+                    <select [(ngModel)]="nuevaRuta.tipo_vehiculo" name="tipo_vehiculo" class="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-medium" required>
+                        <option value="Bus Económico">Bus Económico</option>
+                        <option value="Bus Cama">Bus Cama (160°)</option>
+                        <option value="Bus Super Cama">Bus Súper Cama (180°)</option>
+                        <option value="Vuelo Económico">Vuelo Comercial (Económico)</option>
+                        <option value="Minivan / Colectivo">Minivan / Colectivo Turístico</option>
+                    </select>
+                </div>
+                <button type="submit" [disabled]="guardando" class="w-full py-2.5 bg-jalaspe-blue text-white text-sm font-bold rounded-xl hover:bg-[#00223a] transition-colors flex justify-center items-center mt-2 shadow-md">
+                    {{ guardando ? 'Guardando...' : '+ Agregar Ruta' }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: LISTADO DE RUTAS -->
+    <div class="lg:col-span-2">
+        <div *ngIf="cargando" class="py-10 text-center text-gray-400 animate-pulse">Cargando rutas...</div>
+
+        <div *ngIf="!cargando && rutas.length === 0" class="bg-gray-50 border border-gray-100 border-dashed rounded-2xl py-12 flex flex-col items-center justify-center text-gray-400">
+            <svg class="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <p>Aún no hay rutas registradas.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div *ngFor="let r of rutas" class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow relative group flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex-1 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 border border-blue-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center text-jalaspe-blue font-black text-lg gap-2">
+                            {{ r.origen }}
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            {{ r.destino }}
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 mt-1 gap-3">
+                            <span class="flex items-center text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                {{ r.fecha_salida }}
+                            </span>
+                            <span class="flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ r.hora_salida }}</span>
+                            <span class="px-2 py-0.5 bg-gray-100 rounded-md text-[10px] font-bold uppercase">{{ r.tipo_vehiculo }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6">
+                    <p class="text-2xl font-black text-jalaspe-blue leading-none">S/ {{ r.precio }}</p>
+                    <button (click)="abrirModalEliminar(r.id)" class="text-sm text-gray-400 hover:text-red-500 transition-colors mt-2 font-medium flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="mostrarModalEliminar" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-0">
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" (click)="!eliminandoItem ? cerrarModalEliminar() : null"></div>
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-2">¿Estás seguro?</h3>
+            <p class="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer. El elemento será eliminado permanentemente del catálogo.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" [disabled]="eliminandoItem" (click)="cerrarModalEliminar()" class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">Cancelar</button>
+                <button type="button" [disabled]="eliminandoItem" (click)="confirmarEliminacion()" class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors flex items-center justify-center">
+                    <svg *ngIf="eliminandoItem" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    {{ eliminandoItem ? 'Eliminando...' : 'Sí, eliminar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div *ngIf="mostrarModalEliminar" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-0">
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
+        (click)="!eliminandoItem ? cerrarModalEliminar() : null"></div>
+    <div
+        class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-2">¿Estás seguro?</h3>
+            <p class="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer. El elemento será eliminado
+                permanentemente del catálogo.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" [disabled]="eliminandoItem" (click)="cerrarModalEliminar()"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">Cancelar</button>
+                <button type="button" [disabled]="eliminandoItem" (click)="confirmarEliminacion()"
+                    class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors flex items-center justify-center">
+                    <svg *ngIf="eliminandoItem" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    {{ eliminandoItem ? 'Eliminando...' : 'Sí, eliminar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

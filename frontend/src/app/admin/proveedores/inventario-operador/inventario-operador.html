@@ -1,0 +1,96 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1">
+        <div class="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-6 sticky top-24">
+            <h3 class="text-lg font-bold text-emerald-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Nuevo Paquete / Tour
+            </h3>
+            <form (submit)="guardarTour($event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1.5">Nombre del Tour</label>
+                    <input type="text" [(ngModel)]="nuevoTour.nombre" name="nombre" placeholder="Ej. Ruta del Pisco y Buggies" class="w-full px-3 py-2.5 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm text-emerald-900 font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1.5">Descripción / Itinerario Resumido</label>
+                    <textarea [(ngModel)]="nuevoTour.descripcion" name="descripcion" placeholder="Ej. Visita a bodega, cata de vinos, paseo en areneros y sandboard..." rows="3" class="w-full px-3 py-2.5 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm text-emerald-900 resize-none"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1.5">Duración</label>
+                        <select [(ngModel)]="nuevoTour.duracion" name="duracion" class="w-full px-3 py-2.5 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm text-emerald-900 font-medium" required>
+                            <option value="Medio Día (Half Day)">Medio Día</option>
+                            <option value="Full Day">Full Day</option>
+                            <option value="2 Días / 1 Noche">2 Días / 1 Noche</option>
+                            <option value="3 Días / 2 Noches">3 Días / 2 Noches</option>
+                            <option value="Por Horas">Por Horas</option>
+                        </select>
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1.5">Precio (S/)</label>
+                        <input type="number" [(ngModel)]="nuevoTour.precio" name="precio" min="1" step="0.5" class="w-full px-3 py-2.5 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm text-emerald-900 font-black text-right" required>
+                    </div>
+                </div>
+                <button type="submit" [disabled]="guardando" class="w-full py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 transition-colors flex justify-center items-center mt-2 shadow-md shadow-emerald-500/20">
+                    {{ guardando ? 'Guardando...' : '+ Agregar Tour' }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div *ngIf="cargando" class="py-10 text-center text-emerald-600/50 animate-pulse font-medium">Cargando catálogo de tours...</div>
+
+        <div *ngIf="!cargando && tours.length === 0" class="bg-emerald-50/30 border border-emerald-100 border-dashed rounded-2xl py-12 flex flex-col items-center justify-center text-emerald-600/60">
+            <svg class="w-12 h-12 mb-3 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p>Aún no hay paquetes turísticos registrados.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let t of tours" class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-emerald-300 hover:shadow-md transition-all relative group flex flex-col justify-between overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-emerald-400"></div>
+                <div>
+                    <div class="flex justify-between items-start mb-2 mt-1">
+                        <span class="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {{ t.duracion }}
+                        </span>
+                        <!-- BOTÓN DE ELIMINAR RESTAURADO -->
+                        <button (click)="abrirModalEliminar(t.id)" class="text-gray-400 hover:text-red-500 transition-colors p-1 -mt-1 -mr-1 rounded-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <h4 class="text-jalaspe-blue font-bold text-base leading-tight mb-2 pr-4">{{ t.nombre }}</h4>
+                    <p class="text-xs text-gray-500 line-clamp-3 mb-4 leading-relaxed">{{ t.descripcion }}</p>
+                </div>
+                <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                    <div class="flex items-center">
+                        <div class="w-1.5 h-1.5 rounded-full mr-1.5" [ngClass]="t.estado === 'Disponible' ? 'bg-jalaspe-lime' : 'bg-gray-300'"></div>
+                        <span class="text-[10px] text-gray-400 uppercase font-bold">{{ t.estado }}</span>
+                    </div>
+                    <p class="text-xl font-black text-emerald-600">S/ {{ t.precio }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div *ngIf="mostrarModalEliminar" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-0">
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" (click)="!eliminandoItem ? cerrarModalEliminar() : null"></div>
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-2">¿Estás seguro?</h3>
+            <p class="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer. El elemento será eliminado permanentemente del catálogo.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" [disabled]="eliminandoItem" (click)="cerrarModalEliminar()" class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">Cancelar</button>
+                <button type="button" [disabled]="eliminandoItem" (click)="confirmarEliminacion()" class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors flex items-center justify-center">
+                    <svg *ngIf="eliminandoItem" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    {{ eliminandoItem ? 'Eliminando...' : 'Sí, eliminar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

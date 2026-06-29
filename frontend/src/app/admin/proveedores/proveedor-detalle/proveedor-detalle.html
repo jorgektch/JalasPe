@@ -1,0 +1,257 @@
+<!-- ESTADO DE CARGA -->
+<div *ngIf="cargando" class="flex flex-col items-center justify-center min-h-[60vh]">
+    <svg class="animate-spin h-10 w-10 text-jalaspe-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <p class="text-jalaspe-grey font-medium text-lg">Cargando perfil del proveedor...</p>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div *ngIf="!cargando && proveedor" class="max-w-5xl mx-auto pb-12 animate-in fade-in duration-300">
+
+    <!-- Cabecera -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <button (click)="volver()" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-jalaspe-blue hover:bg-gray-50 hover:border-jalaspe-blue transition-all shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            </button>
+            <div>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-3xl font-bold text-jalaspe-blue tracking-tight">{{ proveedor.nombre_comercial }}</h2>
+                    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider"
+                        [ngClass]="{
+              'bg-purple-50 text-purple-600 border-purple-100': proveedor.categoria === 'Hospedaje',
+              'bg-blue-50 text-blue-600 border-blue-100': proveedor.categoria === 'Transporte',
+              'bg-orange-50 text-orange-600 border-orange-100': proveedor.categoria === 'Restaurante',
+              'bg-emerald-50 text-emerald-600 border-emerald-100': proveedor.categoria === 'Operador'
+            }">{{ proveedor.categoria }}</span>
+                </div>
+                <p class="text-gray-500 mt-1">ID: {{ proveedor.id }}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center bg-white border border-gray-100 px-4 py-2 rounded-xl shadow-sm">
+            <div class="w-2.5 h-2.5 rounded-full mr-2" [ngClass]="proveedor.estado === 'Activo' ? 'bg-jalaspe-lime animate-pulse' : 'bg-gray-300'"></div>
+            <span class="font-semibold text-sm" [ngClass]="proveedor.estado === 'Activo' ? 'text-jalaspe-blue' : 'text-gray-500'">{{ proveedor.estado === 'Activo' ? 'Operativo' : 'Inactivo' }}</span>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN POR PESTAÑAS (TABS) -->
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-10 px-6 pt-4 rounded-t-2xl">
+        <nav class="-mb-px flex space-x-8 overflow-x-auto">
+            <button (click)="cambiarTab('general')" class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center" [ngClass]="tabActiva === 'general' ? 'border-jalaspe-blue text-jalaspe-blue' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Información General
+            </button>
+
+            <button (click)="cambiarTab('inventario')" class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center" [ngClass]="tabActiva === 'inventario' ? 'border-jalaspe-lime text-jalaspe-blue' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                {{ nombreInventario }}
+            </button>
+
+            <!-- NUEVO TAB: INTEGRACIÓN API -->
+            <button (click)="cambiarTab('api')" class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center" [ngClass]="tabActiva === 'api' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                Integración API
+            </button>
+        </nav>
+    </div>
+
+    <!-- CONTENEDORES DE LAS PESTAÑAS -->
+    <div class="bg-white p-6 md:p-8 rounded-b-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border-x border-b border-gray-100 min-h-[400px]">
+
+        <!-- ================= PESTAÑA 1: INFORMACIÓN GENERAL ================= -->
+        <div *ngIf="tabActiva === 'general'" class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <form (submit)="guardarCambios($event)" class="space-y-6 max-w-3xl">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Categoría Operativa</label>
+                        <select name="categoria" [(ngModel)]="proveedor.categoria" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium" required>
+                            <option value="Hospedaje">🏨 Hospedaje</option>
+                            <option value="Transporte">🚌 Transporte</option>
+                            <option value="Restaurante">🍽️ Restaurante</option>
+                            <option value="Operador">🗺️ Operador Turístico</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Estado en la Plataforma</label>
+                        <select name="estado" [(ngModel)]="proveedor.estado" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-bold" required>
+                            <option value="Activo">🟢 Activo (Visible para Agente JalasPe)</option>
+                            <option value="Inactivo">⚪ Inactivo (Oculto)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">RUC (ID Fiscal)</label>
+                        <input type="text" name="ruc" [(ngModel)]="proveedor.ruc" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-mono" required pattern="[0-9]{11}">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Razón Social</label>
+                        <input type="text" name="razon_social" [(ngModel)]="proveedor.razon_social" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue" required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Nombre Comercial (Público)</label>
+                        <input type="text" name="nombre_comercial" [(ngModel)]="proveedor.nombre_comercial" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-bold" required>
+                    </div>
+                </div>
+
+                <div *ngIf="proveedor.categoria !== 'Transporte'" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-50 mt-4">
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">País Base</label>
+                        <select name="pais" [(ngModel)]="proveedor.pais" (change)="onPaisCambio()" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium" required>
+                            <option *ngFor="let p of paises" [value]="p.nombre">{{ p.nombre }}</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Ciudad de Operación</label>
+                        <select name="ciudad" [(ngModel)]="proveedor.ciudad" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium" required [disabled]="ciudades.length === 0">
+                            <option value="" disabled selected>Selecciona ciudad</option>
+                            <option *ngFor="let c of ciudades" [value]="c.nombre">{{ c.nombre }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-8 mt-8 border-t border-gray-100 flex flex-col-reverse md:flex-row md:justify-between items-center gap-4">
+                    <button type="button" [disabled]="eliminando || guardando" (click)="abrirModalEliminar()" class="w-full md:w-auto px-5 py-3 text-red-500 hover:bg-red-50 hover:text-red-600 font-bold rounded-xl transition-colors flex items-center justify-center disabled:opacity-50">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Eliminar Proveedor
+                    </button>
+                    <button type="submit" [disabled]="guardando || eliminando" class="w-full md:w-auto px-8 py-3 bg-jalaspe-blue hover:bg-[#00223a] text-white font-bold rounded-xl transition-colors flex items-center justify-center shadow-md shadow-jalaspe-blue/20">
+                        <svg *ngIf="guardando" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        {{ guardando ? 'Guardando Cambios...' : 'Guardar Cambios' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ================= PESTAÑA 2: INVENTARIO ================= -->
+        <div *ngIf="tabActiva === 'inventario'" class="animate-in fade-in slide-in-from-bottom-2 duration-300 h-full">
+            <app-inventario-hospedaje *ngIf="proveedor.categoria === 'Hospedaje'" [proveedorId]="proveedor.id"></app-inventario-hospedaje>
+            <app-inventario-transporte *ngIf="proveedor.categoria === 'Transporte'" [proveedorId]="proveedor.id"></app-inventario-transporte>
+            <app-inventario-restaurante *ngIf="proveedor.categoria === 'Restaurante'" [proveedorId]="proveedor.id"></app-inventario-restaurante>
+            <app-inventario-operador *ngIf="proveedor.categoria === 'Operador'" [proveedorId]="proveedor.id"></app-inventario-operador>
+
+            <!-- Fallback -->
+            <div *ngIf="proveedor.categoria !== 'Hospedaje' && proveedor.categoria !== 'Transporte' && proveedor.categoria !== 'Restaurante' && proveedor.categoria !== 'Operador'" class="flex flex-col items-center justify-center text-center py-16">
+                <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 border-4 border-white shadow-sm">
+                    <svg class="w-12 h-12 text-jalaspe-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-400 mb-2">Categoría No Reconocida</h3>
+            </div>
+        </div>
+
+        <!-- ================= PESTAÑA 3: INTEGRACIÓN API ================= -->
+        <div *ngIf="tabActiva === 'api'" class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div class="max-w-4xl border border-gray-100 rounded-2xl p-6 bg-purple-50/30 mb-6">
+                <h4 class="text-lg font-bold text-purple-700 flex items-center mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Conexión Directa con el Proveedor
+                </h4>
+                <p class="text-sm text-gray-600">Al configurar estos parámetros, JalasPe Agent podrá consultar disponibilidad y tarifas en tiempo real usando los sistemas externos del proveedor.</p>
+            </div>
+
+            <form (submit)="guardarCambios($event)" class="space-y-6 max-w-4xl">
+                
+                <!-- Endpoint Principal -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">URL Base API (Endpoint Principal)</label>
+                        <input type="url" name="url_base" [(ngModel)]="proveedor.api_config.url_base" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500/20 outline-none text-jalaspe-blue font-mono text-sm" placeholder="https://api.proveedor.com/v1">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Ruta de Documentación del API</label>
+                        <input type="url" name="url_docs" [(ngModel)]="proveedor.api_config.url_docs" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500/20 outline-none text-blue-500 text-sm" placeholder="https://docs.proveedor.com">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-50">
+                    <div>
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Ambiente</label>
+                        <select name="ambiente" [(ngModel)]="proveedor.api_config.ambiente" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500/20 outline-none font-bold" [ngClass]="proveedor.api_config.ambiente === 'Producción' ? 'text-purple-600' : 'text-gray-500'">
+                            <option value="Sandbox">Sandbox (Pruebas)</option>
+                            <option value="Producción">Producción (Live)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Estado de Conexión</label>
+                        <select name="estado_api" [(ngModel)]="proveedor.api_config.estado_api" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500/20 outline-none font-bold" [ngClass]="proveedor.api_config.estado_api === 'Activo' ? 'text-jalaspe-lime' : 'text-gray-400'">
+                            <option value="Activo">Conexión Activa</option>
+                            <option value="Inactivo">Conexión Inactiva</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Credenciales y Seguridad -->
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 mt-6">
+                    <h5 class="text-sm font-bold text-jalaspe-blue mb-4 uppercase tracking-wider">Credenciales de Autenticación</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Tipo de Autenticación</label>
+                            <select name="tipo_auth" [(ngModel)]="proveedor.api_config.tipo_auth" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none text-jalaspe-blue">
+                                <option value="API Key">API Key</option>
+                                <option value="Bearer Token">Bearer Token</option>
+                                <option value="OAuth2">OAuth2</option>
+                                <option value="Basic Auth">Basic Auth</option>
+                                <option value="JWT">JWT</option>
+                                <option value="AWS Signature">AWS Signature</option>
+                                <option value="Ninguna">Ninguna / Pública</option>
+                            </select>
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Cifrado de Valor</label>
+                            <select name="cifrado" [(ngModel)]="proveedor.api_config.cifrado" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none text-jalaspe-blue">
+                                <option [value]="true">Sí, almacenar de forma segura</option>
+                                <option [value]="false">No, almacenar como texto plano</option>
+                            </select>
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Clave de Credencial (Nombre)</label>
+                            <input type="text" name="cred_nombre" [(ngModel)]="proveedor.api_config.credencial_nombre" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none text-jalaspe-blue font-mono text-sm" placeholder="Ej. api_key, client_id">
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Valor de Credencial</label>
+                            <!-- Tipo password para evitar que se vea en pantalla si está al lado de otras personas -->
+                            <input type="password" name="cred_valor" [(ngModel)]="proveedor.api_config.credencial_valor" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none text-jalaspe-blue font-mono text-sm" placeholder="••••••••••••••••">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial de Modificaciones (Solo Vista) -->
+                <div *ngIf="proveedor.api_config.fecha_creacion" class="flex flex-col sm:flex-row gap-4 text-xs text-gray-400 mt-6 bg-gray-50/50 p-4 rounded-xl border border-dashed border-gray-200">
+                    <div><span class="font-bold uppercase tracking-wider text-gray-500 block mb-1">Registro Inicial</span> {{ proveedor.api_config.fecha_creacion | date:'medium' }}</div>
+                    <div *ngIf="proveedor.api_config.fecha_actualizacion"><span class="font-bold uppercase tracking-wider text-gray-500 block mb-1">Última Actualización</span> {{ proveedor.api_config.fecha_actualizacion | date:'medium' }}</div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-gray-100 flex justify-end">
+                    <button type="submit" [disabled]="guardando" class="w-full md:w-auto px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center shadow-md shadow-purple-500/20">
+                        <svg *ngIf="guardando" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        {{ guardando ? 'Guardando Configuración...' : 'Guardar Configuración API' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN AL FINAL -->
+<div *ngIf="mostrarModalEliminar" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-0">
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" (click)="!eliminando ? cerrarModalEliminar() : null"></div>
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-jalaspe-blue mb-2">¿Eliminar Proveedor?</h3>
+            <p class="text-sm text-gray-500 mb-6">Esta acción borrará a <span class="font-bold text-gray-700">{{proveedor.nombre_comercial}}</span> y todo su inventario permanentemente.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" [disabled]="eliminando" (click)="cerrarModalEliminar()" class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">Cancelar</button>
+                <button type="button" [disabled]="eliminando" (click)="confirmarEliminar()" class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors flex items-center justify-center">
+                    <svg *ngIf="eliminando" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

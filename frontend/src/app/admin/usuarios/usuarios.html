@@ -1,0 +1,244 @@
+<div class="max-w-6xl mx-auto mb-8">
+  <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Comunidad y Viajes</h3>
+  <p class="text-jalaspe-grey mt-2">Gestiona el acceso de usuarios y audita los itinerarios en el sistema.</p>
+</div>
+
+<!-- NAVEGACIÓN POR PESTAÑAS -->
+<div class="max-w-6xl mx-auto bg-white border-b border-gray-200 px-6 pt-4 rounded-t-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+  <nav class="-mb-px flex space-x-8 overflow-x-auto">
+    <button (click)="cambiarTab('usuarios')" class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center" [ngClass]="tabActiva === 'usuarios' ? 'border-jalaspe-blue text-jalaspe-blue' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+      Usuarios Registrados
+      <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2.5 rounded-full text-xs" *ngIf="!cargando">{{ usuarios.length }}</span>
+    </button>
+    <button (click)="cambiarTab('planes')" class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center" [ngClass]="tabActiva === 'planes' ? 'border-orange-500 text-jalaspe-blue' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      Itinerarios Generados
+      <span class="ml-2 bg-orange-100 text-orange-600 py-0.5 px-2.5 rounded-full text-xs" *ngIf="!cargando">{{ planes.length }}</span>
+    </button>
+  </nav>
+</div>
+
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="max-w-6xl mx-auto bg-white rounded-b-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border-x border-b border-gray-100 min-h-[400px]">
+  
+  <div *ngIf="cargando" class="flex flex-col items-center justify-center py-20">
+    <svg class="animate-spin h-8 w-8 text-jalaspe-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <p class="text-gray-400 font-medium">Recopilando datos...</p>
+  </div>
+
+  <!-- ================= PESTAÑA 1: USUARIOS ================= -->
+  <div *ngIf="!cargando && tabActiva === 'usuarios'" class="animate-in fade-in duration-300 overflow-x-auto">
+    <table class="w-full text-left text-sm whitespace-nowrap">
+      <thead class="bg-gray-50 text-jalaspe-grey font-semibold border-b border-gray-100">
+        <tr>
+          <th class="px-6 py-4">Usuario (Email)</th>
+          <th class="px-6 py-4">Nombres Completos</th>
+          <th class="px-6 py-4 text-center">Perfil</th>
+          <th class="px-6 py-4 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        <tr *ngIf="usuarios.length === 0">
+           <td colspan="4" class="px-6 py-12 text-center text-gray-400">No hay usuarios registrados.</td>
+        </tr>
+        <tr *ngFor="let u of usuarios" class="hover:bg-gray-50/70 transition-colors group">
+          <td class="px-6 py-4 font-bold text-jalaspe-blue">{{ u.email }}</td>
+          <td class="px-6 py-4 text-gray-600">
+            {{ u.nombres }} {{ u.apellido_paterno }} {{ u.apellido_materno }}
+            <span *ngIf="!u.nombres" class="text-gray-400 italic">No especificado</span>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <span *ngIf="u.perfil_completo" class="px-3 py-1 bg-green-50 text-green-600 border border-green-100 rounded-md text-xs font-bold uppercase tracking-wider">Completo</span>
+            <span *ngIf="!u.perfil_completo" class="px-3 py-1 bg-gray-50 text-gray-500 border border-gray-200 rounded-md text-xs font-bold uppercase tracking-wider">Incompleto</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <button (click)="abrirModalEditarUsuario(u)" class="text-gray-400 hover:text-jalaspe-blue transition-colors p-2 rounded-md mx-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </button>
+            <button (click)="abrirModalEliminarUsuario(u)" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-md mx-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= PESTAÑA 2: PLANES ================= -->
+  <div *ngIf="!cargando && tabActiva === 'planes'" class="animate-in fade-in duration-300 overflow-x-auto">
+    <table class="w-full text-left text-sm whitespace-nowrap">
+      <thead class="bg-gray-50 text-jalaspe-grey font-semibold border-b border-gray-100">
+        <tr>
+          <th class="px-6 py-4">Título del Viaje</th>
+          <th class="px-6 py-4">Destino</th>
+          <th class="px-6 py-4">Creado por</th>
+          <th class="px-6 py-4 text-center">Estado</th>
+          <th class="px-6 py-4 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        <tr *ngIf="planes.length === 0">
+           <td colspan="5" class="px-6 py-12 text-center text-gray-400">Aún no se ha generado ningún itinerario.</td>
+        </tr>
+        <tr *ngFor="let plan of planes" class="hover:bg-orange-50/30 transition-colors group">
+          <td class="px-6 py-4 font-bold text-jalaspe-blue flex items-center">
+            <svg class="w-4 h-4 mr-2 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            {{ plan.titulo }}
+          </td>
+          <td class="px-6 py-4 text-gray-600 font-medium">{{ plan.destino }}</td>
+          <td class="px-6 py-4 text-jalaspe-blue text-xs">{{ obtenerEmailUsuario(plan.uid) }}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded-md text-xs font-bold uppercase tracking-wider">{{ plan.estado }}</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <button (click)="abrirModalEditarPlan(plan)" class="text-gray-400 hover:text-jalaspe-blue transition-colors p-2 rounded-md mx-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </button>
+            <button (click)="abrirModalEliminarPlan(plan)" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-md mx-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ================= MODAL: EDITAR USUARIO ================= -->
+<div *ngIf="mostrarModalEditarUsuario && usuarioActivo" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" (click)="!guardando ? cerrarModalEditarUsuario() : null"></div>
+  <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full relative z-10 p-6 max-h-[90vh] overflow-y-auto">
+    <h3 class="text-xl font-bold text-jalaspe-blue mb-4">Editar Usuario</h3>
+    <form (submit)="guardarUsuario($event)">
+      <p class="text-xs text-gray-500 mb-4 font-mono border-b border-gray-100 pb-3">Email: {{ usuarioActivo.email }}</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Columna 1: Datos Personales -->
+          <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombres</label>
+                <input type="text" [(ngModel)]="usuarioActivo.nombres" name="nombres" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+              </div>
+              <div class="flex gap-3">
+                <div class="w-1/2">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ap. Paterno</label>
+                  <input type="text" [(ngModel)]="usuarioActivo.apellido_paterno" name="apellido_paterno" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+                <div class="w-1/2">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ap. Materno</label>
+                  <input type="text" [(ngModel)]="usuarioActivo.apellido_materno" name="apellido_materno" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombre de Usuario (Username)</label>
+                <input type="text" [(ngModel)]="usuarioActivo.username" name="username" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fecha de Nacimiento</label>
+                <input type="date" [(ngModel)]="usuarioActivo.fecha_nacimiento" name="fecha_nacimiento" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+              </div>
+          </div>
+
+          <!-- Columna 2: Contacto y Ubicación -->
+          <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Número de Celular</label>
+                <input type="text" [(ngModel)]="usuarioActivo.celular" name="celular" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+              </div>
+              <div class="flex gap-3">
+                <div class="w-1/2">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">País</label>
+                  <input type="text" [(ngModel)]="usuarioActivo.pais" name="pais" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+                <div class="w-1/2">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ciudad</label>
+                  <input type="text" [(ngModel)]="usuarioActivo.ciudad" name="ciudad" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Dirección Exacta</label>
+                <input type="text" [(ngModel)]="usuarioActivo.direccion" name="direccion" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Estado del Perfil</label>
+                <select [(ngModel)]="usuarioActivo.perfil_completo" name="perfil_completo" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm text-jalaspe-blue font-bold focus:ring-2 focus:ring-jalaspe-blue/20">
+                  <option [value]="true">Perfil Completo</option>
+                  <option [value]="false">Perfil Incompleto</option>
+                </select>
+              </div>
+          </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+        <button type="button" (click)="cerrarModalEditarUsuario()" class="px-5 py-2.5 text-gray-500 hover:bg-gray-100 font-medium rounded-xl transition-colors">Cancelar</button>
+        <button type="submit" [disabled]="guardando" class="px-6 py-2.5 bg-jalaspe-blue text-white font-bold rounded-xl hover:bg-[#00223a] shadow-md transition-colors flex items-center">
+          <svg *ngIf="guardando" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          {{ guardando ? 'Guardando...' : 'Actualizar Usuario' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= MODAL: ELIMINAR USUARIO ================= -->
+<div *ngIf="mostrarModalEliminarUsuario && usuarioActivo" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" (click)="!eliminando ? cerrarModalEliminarUsuario() : null"></div>
+  <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 p-6 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    </div>
+    <h3 class="text-lg font-bold text-jalaspe-blue mb-2">Eliminar Perfil</h3>
+    <p class="text-sm text-gray-500 mb-6">¿Estás seguro de eliminar el perfil de <span class="font-bold">{{usuarioActivo.email}}</span> de Firestore?</p>
+    <div class="flex flex-col gap-3">
+      <button type="button" [disabled]="eliminando" (click)="confirmarEliminarUsuario()" class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600">{{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}</button>
+      <button type="button" [disabled]="eliminando" (click)="cerrarModalEliminarUsuario()" class="w-full px-4 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: EDITAR PLAN ================= -->
+<div *ngIf="mostrarModalEditarPlan && planActivo" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" (click)="!guardando ? cerrarModalEditarPlan() : null"></div>
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full relative z-10 p-6">
+    <h3 class="text-xl font-bold text-jalaspe-blue mb-4">Editar Itinerario</h3>
+    <form (submit)="guardarPlan($event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Título del Viaje</label>
+        <input type="text" [(ngModel)]="planActivo.titulo" name="titulo" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-bold">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Destino Central</label>
+        <input type="text" [(ngModel)]="planActivo.destino" name="destino" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Estado del Plan</label>
+        <select [(ngModel)]="planActivo.estado" name="estado" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm text-jalaspe-blue font-medium">
+          <option value="progreso">En Progreso</option>
+          <option value="finalizado">Finalizado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" (click)="cerrarModalEditarPlan()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">Cancelar</button>
+        <button type="submit" [disabled]="guardando" class="px-4 py-2 bg-jalaspe-blue text-white font-bold rounded-lg hover:bg-[#00223a] shadow-md">{{ guardando ? 'Guardando...' : 'Actualizar' }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= MODAL: ELIMINAR PLAN ================= -->
+<div *ngIf="mostrarModalEliminarPlan && planActivo" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" (click)="!eliminando ? cerrarModalEliminarPlan() : null"></div>
+  <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full relative z-10 p-6 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+    </div>
+    <h3 class="text-lg font-bold text-jalaspe-blue mb-2">Eliminar Itinerario</h3>
+    <p class="text-sm text-gray-500 mb-6">¿Borrar el viaje <span class="font-bold">{{planActivo.titulo}}</span> permanentemente?</p>
+    <div class="flex flex-col gap-3">
+      <button type="button" [disabled]="eliminando" (click)="confirmarEliminarPlan()" class="w-full px-4 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600">{{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}</button>
+      <button type="button" [disabled]="eliminando" (click)="cerrarModalEliminarPlan()" class="w-full px-4 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200">Cancelar</button>
+    </div>
+  </div>
+</div>
