@@ -1,0 +1,126 @@
+<div class="max-w-6xl mx-auto mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
+    <div>
+        <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Configuración e IA</h3>
+        <p class="text-jalaspe-grey mt-2">Gestiona el comportamiento global y el cerebro de OpenRouter.</p>
+    </div>
+</div>
+
+<div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 min-h-[500px] relative overflow-hidden">
+    
+    <div *ngIf="cargando" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+        <svg class="animate-spin h-8 w-8 text-jalaspe-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p class="text-gray-400 font-medium">Cargando sistema...</p>
+    </div>
+
+    <form *ngIf="!cargando" (submit)="guardarAjustes($event)" class="p-6 md:p-10 space-y-12">
+
+        <!-- BLOQUE 1: CEREBRO DE INTELIGENCIA ARTIFICIAL -->
+        <div>
+            <h4 class="text-xl font-bold text-jalaspe-blue flex items-center mb-6 border-b border-gray-100 pb-3">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                Configuración del Agente IA (Prompts y Conexión)
+            </h4>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Columna API y Bienvenida -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">OpenRouter API Key</label>
+                        <input type="password" [(ngModel)]="ajustes.openrouter_api_key" name="openrouter_api_key" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm font-mono text-jalaspe-blue" placeholder="sk-or-v1-...">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Modelos Disponibles (OpenRouter)</label>
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" [(ngModel)]="nuevoModeloIA" name="nuevo_modelo" (keyup.enter)="agregarModelo(); $event.preventDefault()" placeholder="Ej. openai/gpt-4o-mini" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-mono">
+                            <button type="button" (click)="agregarModelo()" class="bg-jalaspe-blue/10 text-jalaspe-blue px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-jalaspe-blue/20 transition-colors">Añadir</button>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white max-h-40 overflow-y-auto">
+                            <div *ngFor="let m of ajustes.modelos_disponibles" class="p-3 border-b border-gray-50 flex items-center justify-between hover:bg-gray-50 group">
+                                <label class="flex items-center space-x-3 cursor-pointer flex-1">
+                                    <input type="radio" [(ngModel)]="ajustes.modelo_por_defecto" [value]="m" name="modelo_defecto" class="w-4 h-4 text-jalaspe-blue focus:ring-jalaspe-blue/20">
+                                    <span class="text-sm font-mono" [ngClass]="{'font-bold text-jalaspe-blue': ajustes.modelo_por_defecto === m, 'text-gray-600': ajustes.modelo_por_defecto !== m}">{{ m }}</span>
+                                </label>
+                                <button type="button" (click)="eliminarModelo(m)" class="text-gray-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mensaje de Bienvenida del Chat</label>
+                        <textarea [(ngModel)]="ajustes.mensaje_bienvenida" name="mensaje_bienvenida" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue resize-none"></textarea>
+                        <p class="text-[10px] text-gray-400 mt-1">Usa <span class="font-bold text-jalaspe-blue">{{ '{nombre}' }}</span> para insertar el nombre del usuario.</p>
+                    </div>
+                </div>
+
+                <!-- Columna Trinidad de Prompts -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center">
+                            <span class="w-5 h-5 rounded-full bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center text-[10px] mr-2">1</span>
+                            Prompt de Identidad (System Role)
+                        </label>
+                        <textarea [(ngModel)]="ajustes.prompt_identidad" name="prompt_identidad" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-gray-700 resize-none" placeholder="Eres el Agente JalasPe..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center">
+                            <span class="w-5 h-5 rounded-full bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center text-[10px] mr-2">2</span>
+                            Prompt de Protocolo (Flujo de Atención)
+                        </label>
+                        <textarea [(ngModel)]="ajustes.prompt_protocolo" name="prompt_protocolo" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-gray-700 resize-none" placeholder="Sigue ESTRICTAMENTE este orden..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center">
+                            <span class="w-5 h-5 rounded-full bg-jalaspe-blue/10 text-jalaspe-blue flex items-center justify-center text-[10px] mr-2">3</span>
+                            Prompt de Guardrails (Contexto Estricto)
+                        </label>
+                        <textarea [(ngModel)]="ajustes.prompt_guardrails" name="prompt_guardrails" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-gray-700 resize-none" placeholder="REGLA DE ORO: Solo puedes ofrecer los servicios..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOQUE 2: AJUSTES GLOBALES -->
+        <div>
+            <h4 class="text-xl font-bold text-jalaspe-blue flex items-center mb-6 border-b border-gray-100 pb-3">
+                <svg class="w-6 h-6 mr-2 text-jalaspe-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Ajustes Generales de la Plataforma
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email de Soporte</label>
+                    <input type="email" [(ngModel)]="ajustes.contacto_email" name="contacto_email" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">WhatsApp Empresa</label>
+                    <input type="text" [(ngModel)]="ajustes.contacto_whatsapp" name="contacto_whatsapp" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+                <div class="p-4 border border-red-100 bg-red-50/50 rounded-xl flex items-center justify-between">
+                    <div>
+                        <h5 class="text-sm font-bold text-red-600">Modo Mantenimiento</h5>
+                        <p class="text-[10px] text-red-500 mt-0.5">Suspende toda la plataforma.</p>
+                    </div>
+                    <select [(ngModel)]="ajustes.modo_mantenimiento" name="modo_mantenimiento" class="px-3 py-2 bg-white border border-red-200 rounded-lg outline-none text-xs font-bold" [ngClass]="ajustes.modo_mantenimiento === 'true' || ajustes.modo_mantenimiento === true ? 'text-red-600' : 'text-gray-500'">
+                        <option [value]="false">Desactivado</option>
+                        <option [value]="true">Activo</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2 lg:col-span-3">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mensaje de Anuncio Global (Banner superior)</label>
+                    <input type="text" [(ngModel)]="ajustes.mensaje_anuncio" name="mensaje_anuncio" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue">
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-8 border-t border-gray-100 flex justify-end">
+            <button type="submit" [disabled]="guardando" class="px-8 py-3 bg-jalaspe-blue text-white font-bold rounded-xl hover:bg-[#00223a] shadow-md shadow-jalaspe-blue/20 transition-colors flex items-center disabled:opacity-50">
+                <svg *ngIf="guardando" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                {{ guardando ? 'Guardando Sistema...' : 'Guardar Toda la Configuración' }}
+            </button>
+        </div>
+
+    </form>
+</div>

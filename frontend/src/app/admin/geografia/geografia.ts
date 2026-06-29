@@ -8,7 +8,6 @@ import { ToastrService } from 'ngx-toastr';
   standalone: false
 })
 export class Geografia implements OnInit {
-  tabActiva: 'destinos' | 'ajustes' = 'destinos';
   cargando = true;
   guardando = false;
 
@@ -22,48 +21,22 @@ export class Geografia implements OnInit {
   cargandoCiudades = false;
   nuevaCiudad = { nombre: '', descripcion: '', imagen_url: '', estado: 'Activo' };
 
-  // ESTADO DE AJUSTES E IA
-  nuevoModeloIA = '';
-  ajustes: any = {
-    contacto_email: '',
-    contacto_whatsapp: '',
-    modo_mantenimiento: false,
-    mensaje_anuncio: '',
-    modelos_disponibles: [],
-    modelo_por_defecto: '',
-    mensaje_bienvenida: '' // <-- NUEVA VARIABLE
-  };
-
   constructor(private apiService: ApiService, private toastr: ToastrService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
-    await this.cargarDatosBase();
+    await this.cargarPaises();
   }
 
-  async cargarDatosBase() {
+  async cargarPaises() {
     this.cargando = true;
     try {
-      const [resPaises, resAjustes] = await Promise.all([
-        this.apiService.getPaises(),
-        this.apiService.getAjustes()
-      ]);
-      this.paises = resPaises;
-      
-      // FIX: Aseguramos que la lista de modelos siempre sea un array válido aunque sea viejo en la BD
-      this.ajustes = resAjustes;
-      if (!this.ajustes.modelos_disponibles) {
-        this.ajustes.modelos_disponibles = [];
-      }
+      this.paises = await this.apiService.getPaises();
     } catch (error) {
-      this.toastr.error("Error al cargar la información", "Error");
+      this.toastr.error("Error al cargar los países", "Error");
     } finally {
       this.cargando = false;
       this.cdr.detectChanges();
     }
-  }
-
-  cambiarTab(tab: 'destinos' | 'ajustes') {
-    this.tabActiva = tab;
   }
 
   // ==========================
@@ -144,52 +117,6 @@ export class Geografia implements OnInit {
       this.toastr.success("Ciudad eliminada", "Éxito");
     } catch (error) {
       this.toastr.error("Error al eliminar", "Error");
-    }
-  }
-
-  // ==========================
-  // LÓGICA DE AJUSTES E IA
-  // ==========================
-  agregarModelo() {
-    // FIX: Doble validación por seguridad
-    if (!this.ajustes.modelos_disponibles) {
-      this.ajustes.modelos_disponibles = [];
-    }
-
-    const nuevo = this.nuevoModeloIA.trim();
-    if (nuevo && !this.ajustes.modelos_disponibles.includes(nuevo)) {
-      this.ajustes.modelos_disponibles.push(nuevo);
-      this.nuevoModeloIA = '';
-    }
-  }
-
-  eliminarModelo(modelo: string) {
-    if (!this.ajustes.modelos_disponibles) return;
-    
-    this.ajustes.modelos_disponibles = this.ajustes.modelos_disponibles.filter((m: string) => m !== modelo);
-    // Si eliminamos el que estaba por defecto, seleccionamos el primero (si hay)
-    if (this.ajustes.modelo_por_defecto === modelo) {
-      this.ajustes.modelo_por_defecto = this.ajustes.modelos_disponibles.length > 0 ? this.ajustes.modelos_disponibles[0] : '';
-    }
-  }
-
-  async guardarAjustes() {
-    try {
-      this.guardando = true;
-      this.cdr.detectChanges();
-
-      const payload = {
-        ...this.ajustes,
-        modo_mantenimiento: this.ajustes.modo_mantenimiento === 'true' || this.ajustes.modo_mantenimiento === true
-      };
-      
-      await this.apiService.actualizarAjustes(payload);
-      this.toastr.success("Configuración e IAs actualizadas", "Sistema Listo");
-    } catch (error) {
-      this.toastr.error("Error al guardar", "Error");
-    } finally {
-      this.guardando = false;
-      this.cdr.detectChanges();
     }
   }
 }

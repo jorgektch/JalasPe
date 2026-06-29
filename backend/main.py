@@ -152,7 +152,11 @@ class AjustesSistemaData(BaseModel):
     mensaje_anuncio: Optional[str] = None
     modelos_disponibles: Optional[list] = None
     modelo_por_defecto: Optional[str] = None
-    mensaje_bienvenida: Optional[str] = None # <-- NUEVO CAMPO
+    mensaje_bienvenida: Optional[str] = None
+    openrouter_api_key: Optional[str] = None # <-- NUEVO
+    prompt_identidad: Optional[str] = None   # <-- NUEVO
+    prompt_protocolo: Optional[str] = None   # <-- NUEVO
+    prompt_guardrails: Optional[str] = None  # <-- NUEVO
 
 # ================= RUTAS PRINCIPALES =================
 app.include_router(admin.router)
@@ -523,7 +527,11 @@ def obtener_ajustes(usuario: dict = Depends(obtener_usuario_actual)):
                 "google/gemma-4-26b-a4b-it:free"
             ],
             "modelo_por_defecto": "openai/gpt-4o-mini",
-            "mensaje_bienvenida": "¡Hola, {nombre}! Soy el asistente de Jalas.pe. ¿A dónde quieres viajar hoy?" # <-- VALOR POR DEFECTO
+            "mensaje_bienvenida": "¡Hola {nombre}! Soy el Agente JalasPe 🦙, tu experto local de viajes. Estoy listo para armarte una aventura a medida con nuestras mejores opciones. Para empezar, cuéntame: ¿A qué destino te gustaría ir, en qué fechas exactas viajas y cuál es tu presupuesto aproximado?",
+            "openrouter_api_key": "",
+            "prompt_identidad": "Eres el 'Agente JalasPe', el asistente virtual oficial de turismo de la plataforma JalasPe. Tu tarea es armar un paquete a medida para un viajero. Eres amable, profesional y usas un español neutro. ESTRICTAMENTE PROHIBIDO usar palabras como 'che', 'pibe', 'tío', 'guay' o jergas de otros países. Si quieres sonar cercano, limítate a usar un sutil '¡Bacán!' o '¡Genial!'. Sé conciso y directo en tus respuestas.",
+            "prompt_protocolo": "Sigue ESTRICTAMENTE este orden y no avances al siguiente paso hasta cumplir el actual:\n1. Valida Destino, Fechas y Presupuesto. NUNCA asumas el año de las fechas (exige Día, Mes y Año). Exige siempre la MONEDA del presupuesto (Soles o Dólares). Si falta un dato, pregúntalo.\n2. SOLO cuando tengas Fechas con año y Presupuesto con moneda, ofrece opciones de BUSES / TRANSPORTE. Espera elección.\n3. Luego ofrece HOSPEDAJES (Destacando Turismo Vivencial si está disponible). Espera elección.\n4. Luego ofrece TOURS / ACTIVIDADES. Espera elección.\n5. Finalmente pide Nombre completo y DNI del pasajero para la reserva.",
+            "prompt_guardrails": "REGLA DE ORO: Solo puedes ofrecer los servicios de transporte, hoteles, restaurantes y actividades que se te proporcionen en el contexto JSON inyectado en este chat. Si el usuario pide un servicio que no está en el catálogo, discúlpate amablemente y ofrece las alternativas disponibles. Mantén tu formato de extracción de JSON siempre actualizado con las elecciones del usuario."
         }
         doc_ref.set(default_config)
         return default_config

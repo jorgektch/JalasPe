@@ -16,6 +16,7 @@ import { InventarioRestaurante } from './proveedores/inventario-restaurante/inve
 import { InventarioOperador } from './proveedores/inventario-operador/inventario-operador';
 import { Usuarios } from './usuarios/usuarios';
 import { Geografia } from './geografia/geografia';
+import { Configuracion } from './configuracion/configuracion'; // <-- NUEVO
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { Geografia } from './geografia/geografia';
     InventarioOperador,
     Usuarios,
     Geografia,
+    Configuracion // <-- NUEVO
   ],
   imports: [CommonModule, FormsModule, AdminRoutingModule, RouterModule],
 })

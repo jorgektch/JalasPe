@@ -1,64 +1,29 @@
 <div class="max-w-6xl mx-auto mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
     <div>
-        <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Geografía y Ajustes</h3>
-        <p class="text-jalaspe-grey mt-2">Gestiona países, ciudades y el cerebro de Inteligencia Artificial
-            (OpenRouter).</p>
+        <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Ciudades y Cobertura</h3>
+        <p class="text-jalaspe-grey mt-2">Gestiona los países y ciudades donde JalasPe tiene cobertura de servicios.</p>
     </div>
-</div>
-
-<!-- NAVEGACIÓN POR PESTAÑAS -->
-<div
-    class="max-w-6xl mx-auto bg-white border-b border-gray-200 px-6 pt-4 rounded-t-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
-    <nav class="-mb-px flex space-x-8 overflow-x-auto">
-        <button (click)="cambiarTab('destinos')"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center"
-            [ngClass]="tabActiva === 'destinos' ? 'border-jalaspe-blue text-jalaspe-blue' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                </path>
-            </svg>
-            Países y Ciudades
-        </button>
-        <button (click)="cambiarTab('ajustes')"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors outline-none flex items-center"
-            [ngClass]="tabActiva === 'ajustes' ? 'border-purple-500 text-jalaspe-blue' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-                </path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            Ajustes Globales y Modelos IA
-        </button>
-    </nav>
 </div>
 
 <!-- CONTENEDOR PRINCIPAL -->
-<div
-    class="max-w-6xl mx-auto bg-white rounded-b-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border-x border-b border-gray-100 min-h-[500px]">
+<div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden min-h-[500px]">
 
     <div *ngIf="cargando" class="flex flex-col items-center justify-center py-20">
-        <svg class="animate-spin h-8 w-8 text-jalaspe-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24">
+        <svg class="animate-spin h-8 w-8 text-jalaspe-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-            </path>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <p class="text-gray-400 font-medium">Cargando módulos...</p>
+        <p class="text-gray-400 font-medium">Cargando destinos...</p>
     </div>
 
-    <!-- ================= PESTAÑA 1: PAÍSES Y CIUDADES ================= -->
-    <div *ngIf="!cargando && tabActiva === 'destinos'" class="animate-in fade-in duration-300">
+    <!-- ================= ZONA DE PAÍSES Y CIUDADES ================= -->
+    <div *ngIf="!cargando" class="animate-in fade-in duration-300">
         <div class="grid grid-cols-1 md:grid-cols-12 min-h-[500px]">
 
             <!-- COLUMNA IZQUIERDA: PAÍSES -->
             <div class="md:col-span-4 border-r border-gray-100 bg-gray-50/30 p-6 flex flex-col h-full">
                 <h4 class="font-black text-jalaspe-blue tracking-tight mb-4 text-lg">Países Habilitados</h4>
 
-                <!-- FIX: Usando ngSubmit para mayor compatibilidad con Angular -->
                 <form (ngSubmit)="guardarPais()" class="mb-6 flex gap-2">
                     <input type="text" [(ngModel)]="nuevoPais.nombre" name="paisNombre" placeholder="Ej. Perú"
                         class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-sm text-jalaspe-blue font-bold"
@@ -68,23 +33,15 @@
                 </form>
 
                 <div class="flex-1 overflow-y-auto space-y-2">
-                    <div *ngIf="paises.length === 0"
-                        class="text-center text-xs text-gray-400 py-6 border border-dashed rounded-xl">No hay países.
-                    </div>
+                    <div *ngIf="paises.length === 0" class="text-center text-xs text-gray-400 py-6 border border-dashed rounded-xl">No hay países.</div>
 
                     <div *ngFor="let p of paises" (click)="seleccionarPais(p)"
                         class="p-3 bg-white border rounded-xl cursor-pointer transition-all flex justify-between items-center group"
                         [ngClass]="paisActivo?.id === p.id ? 'border-jalaspe-blue shadow-md' : 'border-gray-200 hover:border-gray-300'">
-                        <span class="font-bold text-sm"
-                            [ngClass]="paisActivo?.id === p.id ? 'text-jalaspe-blue' : 'text-gray-600'">{{ p.nombre
-                            }}</span>
+                        <span class="font-bold text-sm" [ngClass]="paisActivo?.id === p.id ? 'text-jalaspe-blue' : 'text-gray-600'">{{ p.nombre }}</span>
                         <button (click)="eliminarPais(p.id); $event.stopPropagation()"
                             class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                </path>
-                            </svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 </div>
@@ -93,13 +50,8 @@
             <!-- COLUMNA DERECHA: CIUDADES -->
             <div class="md:col-span-8 p-6 md:p-8">
 
-                <div *ngIf="!paisActivo"
-                    class="h-full flex flex-col items-center justify-center text-gray-400 text-center">
-                    <svg class="w-16 h-16 mb-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
-                        </path>
-                    </svg>
+                <div *ngIf="!paisActivo" class="h-full flex flex-col items-center justify-center text-gray-400 text-center">
+                    <svg class="w-16 h-16 mb-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
                     <p class="text-lg font-medium text-gray-500">Selecciona un país</p>
                     <p class="text-sm">Para administrar sus ciudades y destinos.</p>
                 </div>
@@ -109,64 +61,43 @@
                         <h4 class="text-2xl font-black text-jalaspe-blue">Ciudades en {{ paisActivo.nombre }}</h4>
                     </div>
 
-                    <!-- FIX: Usando ngSubmit en Ciudades también -->
-                    <form (ngSubmit)="guardarCiudad()"
-                        class="bg-gray-50 p-5 rounded-2xl border border-gray-200 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form (ngSubmit)="guardarCiudad()" class="bg-gray-50 p-5 rounded-2xl border border-gray-200 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nombre de
-                                la Ciudad</label>
-                            <input type="text" [(ngModel)]="nuevaCiudad.nombre" name="c_nombre" placeholder="Ej. Cusco"
-                                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm font-bold text-jalaspe-blue"
-                                required>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nombre de la Ciudad</label>
+                            <input type="text" [(ngModel)]="nuevaCiudad.nombre" name="c_nombre" placeholder="Ej. Cusco" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm font-bold text-jalaspe-blue" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">URL de
-                                Imagen</label>
-                            <input type="url" [(ngModel)]="nuevaCiudad.imagen_url" name="c_img"
-                                placeholder="https://..."
-                                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm text-blue-500">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">URL de Imagen</label>
+                            <input type="url" [(ngModel)]="nuevaCiudad.imagen_url" name="c_img" placeholder="https://..." class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm text-blue-500">
                         </div>
                         <div class="md:col-span-2">
-                            <label
-                                class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Descripción
-                                Breve</label>
-                            <textarea [(ngModel)]="nuevaCiudad.descripcion" name="c_desc" rows="2"
-                                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm text-jalaspe-blue resize-none"></textarea>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Descripción Breve</label>
+                            <textarea [(ngModel)]="nuevaCiudad.descripcion" name="c_desc" rows="2" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl outline-none text-sm text-jalaspe-blue resize-none"></textarea>
                         </div>
                         <div class="md:col-span-2 flex justify-end">
-                            <button type="submit" [disabled]="guardando"
-                                class="bg-jalaspe-blue text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-[#00223a] transition-colors flex items-center disabled:opacity-50">
+                            <button type="submit" [disabled]="guardando" class="bg-jalaspe-blue text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-[#00223a] transition-colors flex items-center disabled:opacity-50">
                                 {{ guardando ? 'Guardando...' : '+ Añadir Ciudad' }}
                             </button>
                         </div>
                     </form>
 
-                    <div *ngIf="cargandoCiudades" class="text-center text-gray-400 animate-pulse py-8">Cargando
-                        ciudades...</div>
+                    <div *ngIf="cargandoCiudades" class="text-center text-gray-400 animate-pulse py-8">Cargando ciudades...</div>
 
-                    <div *ngIf="!cargandoCiudades && ciudades.length === 0"
-                        class="text-center text-gray-400 py-8 border-2 border-dashed border-gray-100 rounded-2xl">
+                    <div *ngIf="!cargandoCiudades && ciudades.length === 0" class="text-center text-gray-400 py-8 border-2 border-dashed border-gray-100 rounded-2xl">
                         Aún no hay ciudades registradas para este país.
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div *ngFor="let c of ciudades"
-                            class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
+                        <div *ngFor="let c of ciudades" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
                             <div class="h-32 bg-gray-200 relative">
                                 <img *ngIf="c.imagen_url" [src]="c.imagen_url" class="w-full h-full object-cover">
-                                <button (click)="eliminarCiudad(c.id)"
-                                    class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                        </path>
-                                    </svg>
+                                <button (click)="eliminarCiudad(c.id)" class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                             </div>
                             <div class="p-4">
                                 <h5 class="font-bold text-jalaspe-blue leading-tight mb-1">{{ c.nombre }}</h5>
-                                <p class="text-xs text-gray-500 line-clamp-2">{{ c.descripcion || 'Sin descripción' }}
-                                </p>
+                                <p class="text-xs text-gray-500 line-clamp-2">{{ c.descripcion || 'Sin descripción' }}</p>
                             </div>
                         </div>
                     </div>
@@ -176,152 +107,4 @@
         </div>
     </div>
 
-    <!-- ================= PESTAÑA 2: AJUSTES Y MODELOS IA ================= -->
-    <div *ngIf="!cargando && tabActiva === 'ajustes'" class="animate-in fade-in duration-300 p-6 md:p-10">
-        <form (ngSubmit)="guardarAjustes()">
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-
-                <!-- COLUMNA: GENERAL -->
-                <div class="space-y-6">
-                    <div class="mb-6 border-b border-gray-100 pb-4">
-                        <h4 class="text-xl font-bold text-jalaspe-blue flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-                                </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            Plataforma
-                        </h4>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email
-                                de Soporte</label>
-                            <input type="email" [(ngModel)]="ajustes.contacto_email" name="contacto_email"
-                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none text-sm text-jalaspe-blue">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">WhatsApp
-                                Empresa</label>
-                            <input type="text" [(ngModel)]="ajustes.contacto_whatsapp" name="contacto_whatsapp"
-                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none text-sm text-jalaspe-blue">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mensaje de
-                            Bienvenida del Agente IA</label>
-                        <textarea [(ngModel)]="ajustes.mensaje_bienvenida" name="mensaje_bienvenida" rows="3"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none text-sm text-jalaspe-blue resize-none"
-                            placeholder="Hola {nombre}, soy..."></textarea>
-                        <p class="text-[10px] text-gray-400 mt-1">Usa <span class="font-bold text-purple-500">{{
-                                '{nombre}' }}</span> para que la IA inserte automáticamente el nombre del usuario.</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mensaje de
-                            Anuncio Global (Banner)</label>
-                        <textarea [(ngModel)]="ajustes.mensaje_anuncio" name="mensaje_anuncio" rows="2"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none text-sm text-jalaspe-blue resize-none"></textarea>
-                    </div>
-
-                    <div class="p-4 border border-red-100 bg-red-50/50 rounded-xl flex items-center justify-between">
-                        <div>
-                            <h5 class="text-sm font-bold text-red-600">Modo Mantenimiento</h5>
-                            <p class="text-[10px] text-red-500 mt-0.5">Suspende la generación de viajes.</p>
-                        </div>
-                        <div>
-                            <select [(ngModel)]="ajustes.modo_mantenimiento" name="modo_mantenimiento"
-                                class="px-3 py-2 bg-white border border-red-200 rounded-lg outline-none text-xs font-bold"
-                                [ngClass]="ajustes.modo_mantenimiento === 'true' || ajustes.modo_mantenimiento === true ? 'text-red-600' : 'text-gray-500'">
-                                <option [value]="false">Desactivado</option>
-                                <option [value]="true">Activo</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- COLUMNA: CEREBRO DE INTELIGENCIA ARTIFICIAL (OpenRouter) -->
-                <div class="space-y-6">
-                    <div class="mb-6 border-b border-gray-100 pb-4">
-                        <h4 class="text-xl font-bold text-jalaspe-blue flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-emerald-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
-                                </path>
-                            </svg>
-                            Modelos de IA (OpenRouter)
-                        </h4>
-                    </div>
-
-                    <!-- Agregar modelo -->
-                    <div class="flex gap-2">
-                        <!-- Se quitó el form aquí para que no interfiera con el form principal -->
-                        <input type="text" [(ngModel)]="nuevoModeloIA" name="nuevo_modelo"
-                            (keyup.enter)="agregarModelo(); $event.preventDefault()"
-                            placeholder="Ej. openai/gpt-4o-mini"
-                            class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm text-jalaspe-blue font-mono">
-                        <button type="button" (click)="agregarModelo()"
-                            class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-600 transition-colors">Añadir</button>
-                    </div>
-
-                    <!-- Lista de modelos -->
-                    <div class="border border-gray-200 rounded-xl overflow-hidden bg-gray-50/50">
-                        <div class="px-4 py-3 bg-gray-100 border-b border-gray-200 flex justify-between items-center">
-                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Modelo por
-                                Defecto</span>
-                        </div>
-
-                        <div class="divide-y divide-gray-100">
-                            <div *ngIf="ajustes.modelos_disponibles?.length === 0"
-                                class="p-4 text-center text-sm text-gray-400">
-                                No hay modelos configurados.
-                            </div>
-                            <div *ngFor="let m of ajustes.modelos_disponibles"
-                                class="p-3 flex items-center justify-between hover:bg-white transition-colors group">
-                                <label class="flex items-center space-x-3 cursor-pointer flex-1">
-                                    <input type="radio" [(ngModel)]="ajustes.modelo_por_defecto" [value]="m"
-                                        name="modelo_defecto" class="w-4 h-4 text-emerald-500 focus:ring-emerald-500">
-                                    <span class="text-sm font-mono text-jalaspe-blue"
-                                        [ngClass]="{'font-bold text-emerald-600': ajustes.modelo_por_defecto === m}">{{
-                                        m }}</span>
-                                </label>
-                                <button type="button" (click)="eliminarModelo(m)"
-                                    class="text-gray-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-400">El modelo seleccionado será usado por JalasPe Agent al conectarse
-                        con la API de OpenRouter con temperature=0.1.</p>
-                </div>
-            </div>
-
-            <div class="pt-10 border-t border-gray-100 mt-8 flex justify-end">
-                <button type="submit" [disabled]="guardando"
-                    class="px-8 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 shadow-md shadow-purple-500/20 transition-colors flex items-center disabled:opacity-50">
-                    <svg *ngIf="guardando" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    {{ guardando ? 'Guardando...' : 'Guardar Ajustes y Modelos' }}
-                </button>
-            </div>
-        </form>
-    </div>
 </div>

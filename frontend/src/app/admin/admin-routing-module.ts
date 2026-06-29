@@ -5,8 +5,9 @@ import { Dashboard } from './dashboard/dashboard';
 import { Perfil } from './perfil/perfil'; 
 import { Proveedores } from './proveedores/proveedores';
 import { ProveedorDetalle } from './proveedores/proveedor-detalle/proveedor-detalle';
-import { Usuarios } from './usuarios/usuarios'; // <-- 1. Importa el componente
+import { Usuarios } from './usuarios/usuarios'; 
 import { Geografia } from './geografia/geografia';
+import { Configuracion } from './configuracion/configuracion'; // <-- NUEVO
 
 const routes: Routes = [
   { 
@@ -19,8 +20,8 @@ const routes: Routes = [
       { path: 'proveedores', component: Proveedores },
       { path: 'proveedores/:id', component: ProveedorDetalle },
       { path: 'usuarios', component: Usuarios },
-      // 👇 CAMBIA ESTA LÍNEA 👇
-      { path: 'configuracion', component: Geografia } 
+      { path: 'cobertura', component: Geografia },       // <-- RUTA CAMBIADA
+      { path: 'configuracion', component: Configuracion } // <-- NUEVA RUTA
     ]
   }
 ];
