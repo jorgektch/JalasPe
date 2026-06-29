@@ -37,8 +37,10 @@ export class PlanesComponent implements OnInit {
   }
 
   async cargarPlanes() {
+    this.cargando = true;
+    this.cdr.detectChanges(); // Forzamos a Angular a asimilar el estado de carga
+    
     try {
-      this.cargando = true;
       this.misPlanes = await this.apiService.getMisPlanes();
     } catch (error) {
       this.toastr.error("No se pudieron cargar tus planes", "Error");
@@ -49,9 +51,10 @@ export class PlanesComponent implements OnInit {
   }
 
   async crearNuevoPlan() {
+    this.cargando = true;
+    this.cdr.detectChanges();
+
     try {
-      this.cargando = true;
-      this.cdr.detectChanges(); // Para que salga el loader si quisieras ponerlo
       const res = await this.apiService.crearPlan('Mi Nueva Aventura', 'Sin definir');
       this.toastr.success("¡Plan creado! Empecemos a organizar.", "Éxito");
       this.router.navigate(['/app/plan', res.id]); 
@@ -67,30 +70,34 @@ export class PlanesComponent implements OnInit {
     event.stopPropagation(); 
     this.planAEliminarId = planId;
     this.mostrarModalEliminar = true;
+    this.cdr.detectChanges(); // Notificamos a la vista que el modal se abrió
   }
 
   cerrarModalEliminar() {
     this.mostrarModalEliminar = false;
     this.planAEliminarId = null;
+    this.eliminando = false;
+    this.cdr.detectChanges(); // Notificamos a la vista que el modal se cerró
   }
 
   async confirmarEliminacion() {
     if (!this.planAEliminarId) return;
 
+    this.eliminando = true; 
+    this.cdr.detectChanges();
+    
     try {
-      this.eliminando = true; 
-      this.cdr.detectChanges();
-      
       await this.apiService.eliminarPlan(this.planAEliminarId);
+      
+      // ESTRATEGIA LOCAL: Quitamos el plan del arreglo en memoria sin recargar de la base de datos
+      this.misPlanes = this.misPlanes.filter(p => p.id !== this.planAEliminarId);
       this.toastr.success("El plan ha sido eliminado", "Limpieza exitosa");
       
-      await this.cargarPlanes(); 
     } catch (error) {
       this.toastr.error("No se pudo eliminar el plan", "Error");
     } finally {
-      this.eliminando = false;
+      // Cerramos el modal independientemente del resultado
       this.cerrarModalEliminar();
-      this.cdr.detectChanges();
     }
   }
 }

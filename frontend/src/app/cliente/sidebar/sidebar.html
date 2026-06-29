@@ -56,15 +56,16 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE MIS VIAJES CORREGIDA -->
         <div>
-            <a routerLink="/app/viajes" (click)="cerrarMenu()" routerLinkActive="bg-purple-500/5 text-purple-600 font-semibold" class="flex items-center px-4 py-3 text-jalaspe-grey hover:bg-gray-50 hover:text-purple-600 rounded-xl transition-colors group cursor-pointer w-full justify-between relative overflow-hidden">
+            <a routerLink="/app/viajes" (click)="cerrarMenu()" routerLinkActive="bg-jalaspe-blue/5 text-jalaspe-blue font-semibold" class="flex items-center px-4 py-3 text-jalaspe-grey hover:bg-gray-50 hover:text-jalaspe-blue rounded-xl transition-colors group cursor-pointer w-full justify-between relative overflow-hidden">
                 <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <svg class="w-5 h-5 mr-3 group-hover:text-jalaspe-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     Mis Viajes
                 </div>
             </a>
             <div class="ml-11 mt-1 space-y-1 border-l-2 border-gray-100 pl-3 py-1">
-                <a *ngFor="let viaje of misViajes" [routerLink]="['/app/viaje', viaje.id]" (click)="cerrarMenu()" routerLinkActive="text-purple-600 font-semibold" class="block text-sm text-jalaspe-grey hover:text-purple-600 truncate py-1.5 transition-colors">
+                <a *ngFor="let viaje of misViajes" [routerLink]="['/app/viaje', viaje.id]" (click)="cerrarMenu()" routerLinkActive="text-jalaspe-blue font-semibold" class="block text-sm text-jalaspe-grey hover:text-jalaspe-blue truncate py-1.5 transition-colors">
                     {{ viaje.titulo }}
                 </a>
                 <p *ngIf="misViajes.length === 0" class="text-xs text-gray-400 italic py-1">Sin viajes confirmados</p>

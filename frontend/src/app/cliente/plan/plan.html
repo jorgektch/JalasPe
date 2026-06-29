@@ -1,4 +1,4 @@
-<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue overflow-hidden">
+<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue overflow-hidden relative">
 
   <app-sidebar></app-sidebar>
 
@@ -6,9 +6,10 @@
     
     <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 z-0 flex-shrink-0">
       <h2 class="text-xl font-semibold text-jalaspe-blue hidden sm:block">Agente JalasPe</h2>
-      <h2 class="text-xl font-semibold text-jalaspe-blue sm:hidden"></h2> <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 hidden sm:flex">
+      <h2 class="text-xl font-semibold text-jalaspe-blue sm:hidden"></h2> 
+      <div class="flex items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 hidden sm:flex">
         <span class="text-sm font-semibold text-jalaspe-blue">{{ usuarioEmail }}</span>
-        <a routerLink="/app/perfil" class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm cursor-pointer hover:scale-105 transition-transform" title="Ir a Mi Perfil">
+        <a routerLink="/app/perfil" class="w-7 h-7 rounded-full bg-jalaspe-blue text-white flex items-center justify-center ml-3 text-xs font-bold shadow-sm cursor-pointer hover:scale-105 transition-transform">
           {{ usuarioEmail ? usuarioEmail.charAt(0).toUpperCase() : 'U' }}
         </a>
       </div>
@@ -17,11 +18,9 @@
     <div class="flex-1 flex overflow-hidden relative">
       
       <main class="flex-1 flex flex-col min-w-0 bg-white">
-        
         <div class="h-14 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between px-4 lg:px-6 z-10 flex-shrink-0">
-          
           <div class="flex items-center min-w-0">
-            <a routerLink="/app/planes" class="mr-3 text-gray-400 hover:text-jalaspe-blue transition-colors cursor-pointer flex-shrink-0" title="Volver al directorio">
+            <a routerLink="/app/planes" class="mr-3 text-gray-400 hover:text-jalaspe-blue transition-colors cursor-pointer flex-shrink-0">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </a>
             
@@ -30,47 +29,69 @@
                 <h2 *ngIf="!editandoTitulo" class="text-sm font-bold text-jalaspe-blue leading-tight truncate max-w-[130px] sm:max-w-xs cursor-pointer" (click)="activarEdicion()">
                   {{ nombrePlan }}
                 </h2>
-                <button *ngIf="!editandoTitulo" (click)="activarEdicion()" class="ml-1.5 text-gray-400 hover:text-jalaspe-blue opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none flex-shrink-0">
+                <button *ngIf="!editandoTitulo" (click)="activarEdicion()" class="ml-1.5 text-gray-400 hover:text-jalaspe-blue opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
-                
                 <input *ngIf="editandoTitulo" type="text" [(ngModel)]="nombrePlan" (blur)="guardarTitulo()" (keyup.enter)="guardarTitulo()" class="text-sm font-bold text-jalaspe-blue leading-tight bg-white border-b-2 border-jalaspe-blue outline-none px-1 py-0.5 max-w-[130px] sm:max-w-xs" autofocus>
               </div>
               
               <div class="flex items-center">
-                <span class="w-2 h-2 rounded-full bg-jalaspe-lime mr-1.5 animate-pulse"></span>
-                <p class="text-[10px] sm:text-xs text-jalaspe-grey font-medium truncate">IA en línea</p>
+                <span class="w-2 h-2 rounded-full mr-1.5" [ngClass]="escribiendoIA ? 'bg-orange-500 animate-pulse' : 'bg-jalaspe-lime'"></span>
+                <p class="text-[10px] sm:text-xs text-jalaspe-grey font-medium truncate">{{ escribiendoIA ? 'Analizando...' : 'IA en línea' }}</p>
               </div>
             </div>
           </div>
 
-          <button (click)="toggleResumenMobile()" class="lg:hidden bg-white border border-gray-200 text-gray-600 hover:text-jalaspe-blue hover:border-jalaspe-blue/30 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center transition-colors flex-shrink-0 shadow-sm">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          <button (click)="toggleResumenMobile()" class="lg:hidden bg-white border border-gray-200 text-gray-600 hover:text-jalaspe-blue px-3 py-1.5 rounded-lg text-xs font-bold flex items-center shadow-sm">
             Resumen
           </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-gray-50/50">
-          <div class="flex items-start max-w-[90%] sm:max-w-[85%]">
-            <div class="w-8 h-8 rounded-full bg-jalaspe-blue flex items-center justify-center flex-shrink-0 mr-3 mt-1">
-              <span class="text-white text-xs font-bold">IA</span>
-            </div>
-            <div class="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none shadow-sm">
-              <p class="text-sm text-gray-700 leading-relaxed">¡Genial! Ya tengo anotado que viajan a Paracas en Cruz del Sur. Ahora, ¿prefieren quedarse en un Airbnb frente al mar o buscan un Hostal más fiestero para el grupo?</p>
-            </div>
+        <div #chatScroll class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-gray-50/50 scroll-smooth pb-10">
+          
+          <div *ngIf="cargandoChat" class="h-full flex flex-col items-center justify-center text-center px-4">
+              <svg class="animate-spin h-8 w-8 mb-4 text-jalaspe-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <p class="text-jalaspe-grey text-sm font-medium">Conectando con el Agente JalasPe...</p>
           </div>
 
-          <div class="flex items-start justify-end max-w-[90%] sm:max-w-[85%] ml-auto">
-            <div class="bg-jalaspe-blue text-white p-4 rounded-2xl rounded-tr-none shadow-sm">
-              <p class="text-sm leading-relaxed">Un Airbnb está perfecto. Somos 3 por ahora, pero tal vez se sume uno más.</p>
+          <ng-container *ngIf="!cargandoChat">
+            <div *ngFor="let msg of mensajes" class="flex items-start max-w-[90%] sm:max-w-[85%]" [ngClass]="{'ml-auto justify-end': msg.rol === 'user'}">
+              
+              <div *ngIf="msg.rol === 'assistant'" class="w-8 h-8 rounded-full bg-jalaspe-blue flex items-center justify-center flex-shrink-0 mr-3 mt-1 shadow-sm">
+                <span class="text-white text-xs font-bold">IA</span>
+              </div>
+
+              <!-- BURBUJA DE MENSAJE -->
+              <div class="flex flex-col" [ngClass]="{'items-end': msg.rol === 'user'}">
+                  <div *ngIf="msg.rol === 'user'" class="mb-1.5 flex items-center">
+                    <span class="text-[9px] font-black uppercase tracking-wider text-jalaspe-blue/50 bg-gray-200/70 px-2 py-0.5 rounded-md">
+                      Creador del chat
+                    </span>
+                  </div>
+
+                  <div class="p-4 shadow-sm" [ngClass]="msg.rol === 'user' ? 'bg-jalaspe-blue text-white rounded-2xl rounded-tr-none' : 'bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-tl-none'">
+                    <p *ngIf="msg.rol === 'user'" class="text-sm leading-relaxed whitespace-pre-wrap">{{ msg.contenido }}</p>
+                    <div *ngIf="msg.rol === 'assistant'" class="text-sm leading-relaxed" [innerHTML]="formatMarkdown(msg.contenido)"></div>
+                  </div>
+              </div>
+
+            </div>
+          </ng-container>
+
+          <div *ngIf="escribiendoIA" class="flex items-start max-w-[90%] sm:max-w-[85%]">
+            <div class="w-8 h-8 rounded-full bg-jalaspe-blue flex items-center justify-center flex-shrink-0 mr-3 mt-1 shadow-sm animate-pulse">
+              <span class="text-white text-xs font-bold">IA</span>
+            </div>
+            <div class="bg-white border border-gray-100 px-5 py-4 rounded-2xl rounded-tl-none shadow-sm flex items-center h-12">
+              <span class="text-gray-400 font-medium text-sm animate-pulse">Pensando...</span>
             </div>
           </div>
         </div>
 
         <div class="p-3 sm:p-4 bg-white border-t border-gray-100">
-          <form class="max-w-4xl mx-auto relative flex items-center">
-            <input type="text" class="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/10 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue placeholder-gray-400 text-sm" placeholder="Responde aquí...">
-            <button type="submit" class="absolute right-1.5 w-9 h-9 rounded-lg bg-jalaspe-blue hover:bg-[#00223a] text-white flex items-center justify-center transition-colors">
+          <form (ngSubmit)="enviarMensaje()" class="max-w-4xl mx-auto relative flex items-center">
+            <input type="text" ... [disabled]="escribiendoIA || cargandoChat || estadoPlan === 'pagado'" ... placeholder="{{ estadoPlan === 'pagado' ? 'Este plan ya ha sido confirmado' : 'Escribe tu mensaje aquí...' }}">
+            <button type="submit" [disabled]="!nuevoMensaje.trim() || escribiendoIA || cargandoChat || estadoPlan === 'pagado'" class="absolute right-1.5 w-9 h-9 rounded-lg bg-jalaspe-blue hover:bg-[#00223a] text-white flex items-center justify-center transition-colors disabled:opacity-50">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
             </button>
           </form>
@@ -85,35 +106,32 @@
         
         <div class="lg:hidden p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
           <h3 class="font-bold text-jalaspe-blue">Resumen en vivo</h3>
-          <button (click)="toggleResumenMobile()" class="p-2 bg-white rounded-full text-gray-400 hover:text-gray-700 shadow-sm border border-gray-200">
+          <button (click)="toggleResumenMobile()" class="p-2 bg-white rounded-full text-gray-400 shadow-sm border border-gray-200">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
         <div class="p-5 sm:p-6 border-b border-gray-100">
           <h3 class="text-xl font-bold text-jalaspe-blue mb-1 hidden lg:block">{{ nombrePlan }}</h3>
-          <p class="text-xs font-semibold text-jalaspe-turquoise uppercase tracking-wider mb-5">
-            Estado: <span *ngIf="estadoPlan === 'en_progreso'" class="text-orange-500">En Progreso</span>
-                    <span *ngIf="estadoPlan === 'completado'" class="text-blue-500">Esperando Aprobación</span>
-                    <span *ngIf="estadoPlan === 'aprobado'" class="text-jalaspe-lime">Plan Aprobado</span>
+          <p class="text-xs font-semibold uppercase tracking-wider mb-5"
+             [ngClass]="{'text-orange-500': estadoPlan === 'en_progreso', 'text-blue-500': estadoPlan === 'completado', 'text-jalaspe-lime': estadoPlan === 'aprobado'}">
+            Estado: <span *ngIf="estadoPlan === 'en_progreso'">En Progreso</span>
+                    <span *ngIf="estadoPlan === 'completado'">Esperando Confirmación</span>
+                    <span *ngIf="estadoPlan === 'aprobado'">Listo para Pagar</span>
           </p>
 
           <div class="flex items-center justify-between">
             <div class="flex -space-x-3">
-              <div *ngFor="let persona of participantes" [class]="'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ' + persona.color" [title]="persona.nombre">
+              <div *ngFor="let persona of participantes" [class]="'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm ' + persona.color">
                 {{ persona.inicial }}
               </div>
-              <button (click)="agregarInvitado()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-500 border-2 border-white hover:bg-gray-200 transition-colors z-10">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-              </button>
             </div>
-            <span class="text-xs font-medium text-gray-400">{{ participantes.length }} confirmados</span>
+            <span class="text-xs font-medium text-gray-400">1 confirmado</span>
           </div>
         </div>
 
         <div class="flex-1 overflow-y-auto p-5 sm:p-6 pb-24 lg:pb-6">
           <h4 class="text-sm font-bold text-gray-900 mb-6">Progreso del Plan</h4>
-          
           <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
             
             <div *ngFor="let paso of protocolo" class="relative flex items-start">
@@ -126,39 +144,105 @@
               </div>
 
               <div class="flex-1 min-w-0">
-                <h5 class="text-sm font-bold" [ngClass]="{'text-gray-900': paso.estado !== 'pendiente', 'text-gray-400': paso.estado === 'pendiente'}">
-                  {{ paso.titulo }}
-                </h5>
-                <p class="text-xs mt-1 leading-snug" [ngClass]="{'text-gray-600': paso.estado === 'completado', 'text-jalaspe-blue font-medium': paso.estado === 'en_progreso', 'text-gray-400': paso.estado === 'pendiente'}">
-                  {{ paso.resumen }}
-                </p>
+                <h5 class="text-sm font-bold" [ngClass]="{'text-gray-900': paso.estado !== 'pendiente', 'text-gray-400': paso.estado === 'pendiente'}">{{ paso.titulo }}</h5>
+                <p class="text-xs mt-1 leading-snug" [ngClass]="{'text-gray-600': paso.estado === 'completado', 'text-jalaspe-blue font-medium': paso.estado === 'en_progreso', 'text-gray-400': paso.estado === 'pendiente'}">{{ paso.resumen }}</p>
               </div>
             </div>
           </div>
         </div>
 
         <div class="p-5 sm:p-6 bg-gray-50 border-t border-gray-100">
-          <div class="flex justify-between items-end mb-4 sm:mb-6">
-            <span class="text-xs sm:text-sm text-gray-500 font-medium">Aprox. por persona</span>
-            <span class="text-xl sm:text-2xl font-black text-jalaspe-blue">{{ presupuestoEstimado }}</span>
-          </div>
-
-          <button *ngIf="estadoPlan === 'en_progreso'" disabled class="w-full py-3 rounded-xl bg-gray-200 text-gray-500 font-bold text-sm cursor-not-allowed">
-            Completando plan...
+          <button *ngIf="estadoPlan === 'en_progreso' || estadoPlan === 'completado'" disabled class="w-full py-3 rounded-xl bg-gray-200 text-gray-500 font-bold text-sm cursor-not-allowed">
+            Conversando con el Agente...
           </button>
 
-          <button *ngIf="estadoPlan === 'completado' || estadoPlan === 'aprobado'" (click)="verPlanDetallado()" class="w-full py-3 rounded-xl bg-white border border-gray-200 hover:border-jalaspe-blue text-jalaspe-blue font-bold text-sm shadow-sm transition-colors mb-3 flex justify-center items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-            Plan Detallado
+          <!-- EL BOTÓN AHORA ABRE EL MODAL -->
+          <button *ngIf="estadoPlan === 'aprobado'" (click)="abrirModalPago()" class="w-full py-3 rounded-xl bg-jalaspe-lime hover:bg-[#b5e024] text-jalaspe-blue font-black text-sm shadow-md transition-transform flex justify-center items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+            Realizar Pago Único
           </button>
 
-          <button *ngIf="estadoPlan === 'aprobado'" (click)="pagarMiParte()" class="w-full py-3 rounded-xl bg-jalaspe-lime hover:bg-[#b5e024] text-jalaspe-blue font-extrabold text-sm shadow-md transition-transform flex justify-center items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-            Pagar mi parte
-          </button>
+          <!-- BOTÓN PARA IR AL VIAJE SI YA ESTÁ PAGADO -->
+          <a *ngIf="estadoPlan === 'pagado'" [routerLink]="['/app/viaje', planId]" class="w-full py-3 rounded-xl bg-jalaspe-blue hover:bg-[#00223a] text-white font-black text-sm shadow-md transition-colors flex justify-center items-center cursor-pointer">
+            Ir al Viaje Confirmado
+          </a>
         </div>
 
       </aside>
     </div>
   </div>
+
+  <!-- ================= MODAL DE PASARELA DE PAGO ================= -->
+  <div *ngIf="mostrarModalPago" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" (click)="cerrarModalPago()"></div>
+    
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 overflow-hidden transform transition-all flex flex-col">
+      <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h3 class="text-lg font-bold text-jalaspe-blue flex items-center">
+          <svg class="w-5 h-5 mr-2 text-jalaspe-turquoise" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+          Pasarela Segura
+        </h3>
+        <button (click)="cerrarModalPago()" [disabled]="procesandoPago" class="text-gray-400 hover:text-gray-700 disabled:opacity-50">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <!-- Pestañas de selección de pago -->
+        <div class="flex rounded-lg bg-gray-100 p-1 mb-6">
+          <button (click)="metodoPago = 'tarjeta'; errorPago=''" [ngClass]="{'bg-white shadow text-jalaspe-blue': metodoPago === 'tarjeta', 'text-gray-500': metodoPago !== 'tarjeta'}" class="flex-1 py-2 text-sm font-bold rounded-md transition-all">Tarjeta</button>
+          <button (click)="metodoPago = 'yape'; errorPago=''" [ngClass]="{'bg-white shadow text-jalaspe-blue': metodoPago === 'yape', 'text-gray-500': metodoPago !== 'yape'}" class="flex-1 py-2 text-sm font-bold rounded-md transition-all">Yape / Plin</button>
+        </div>
+
+        <!-- Alerta de Error -->
+        <div *ngIf="errorPago" class="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100 flex items-start">
+          <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          {{ errorPago }}
+        </div>
+
+        <!-- FORMULARIO: TARJETA -->
+        <div *ngIf="metodoPago === 'tarjeta'" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Número de Tarjeta</label>
+            <input type="text" [(ngModel)]="datosTarjeta.numero" placeholder="0000 0000 0000 0000" maxlength="19" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium">
+          </div>
+          <div class="flex gap-4">
+            <div class="flex-1">
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Vencimiento</label>
+              <input type="text" [(ngModel)]="datosTarjeta.fecha" placeholder="MM/AA" maxlength="5" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium">
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">CVV</label>
+              <input type="password" [(ngModel)]="datosTarjeta.cvv" placeholder="•••" maxlength="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium text-center">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Nombre del Titular</label>
+            <input type="text" [(ngModel)]="datosTarjeta.titular" placeholder="COMO APARECE EN LA TARJETA" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium uppercase">
+          </div>
+        </div>
+
+        <!-- FORMULARIO: YAPE / PLIN -->
+        <div *ngIf="metodoPago === 'yape'" class="space-y-4 text-center">
+          <div class="w-32 h-32 mx-auto bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+          </div>
+          <p class="text-sm text-gray-500">Escanea el código o transfiere al número <strong class="text-jalaspe-blue">999 999 999</strong></p>
+          <div class="text-left mt-4">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">N° de Operación</label>
+            <input type="text" [(ngModel)]="datosYape.operacion" placeholder="Ej: 12345678" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-medium text-center">
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÓN CONFIRMAR -->
+      <div class="p-5 border-t border-gray-100 bg-gray-50 mt-auto">
+        <button (click)="validarYProcesarPago()" [disabled]="procesandoPago" class="w-full py-3.5 rounded-xl bg-jalaspe-blue hover:bg-[#00223a] text-white font-bold text-sm shadow-md transition-colors flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed">
+          <svg *ngIf="procesandoPago" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          {{ procesandoPago ? 'Procesando Pago Seguro...' : 'Confirmar y Pagar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

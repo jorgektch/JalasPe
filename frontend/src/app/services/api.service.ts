@@ -247,4 +247,24 @@ export class ApiService {
     const url = `${environment.apiUrl}/api/v1/viajes`;
     return firstValueFrom(this.http.get<any[]>(url));
   }
+
+  // ==========================================
+  // CEREBRO IA: CHAT
+  // ==========================================
+  
+  async getMensajesPlan(planId: string) {
+    const url = `${environment.apiUrl}/api/v1/planes/${planId}/mensajes`;
+    return firstValueFrom(this.http.get<any[]>(url));
+  }
+
+  async enviarMensajeChat(planId: string, mensaje: string) {
+    const url = `${environment.apiUrl}/api/v1/planes/${planId}/chat`;
+    return firstValueFrom(this.http.post<any>(url, { mensaje }));
+  }
+
+  // Llamada para pagar y confirmar el viaje
+  async pagarPlan(planId: string) {
+    const url = `${environment.apiUrl}/api/v1/planes/${planId}`;
+    return firstValueFrom(this.http.patch<any>(url, { estado: 'pagado' }));
+  }
 }

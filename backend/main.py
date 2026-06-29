@@ -1,3 +1,5 @@
+import requests
+import datetime
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -45,7 +47,11 @@ class NuevoPlanData(BaseModel):
     destino: str
 
 class ActualizarPlanData(BaseModel):
-    titulo: str
+    titulo: Optional[str] = None
+    estado: Optional[str] = None # <-- NUEVO: Permitir cambiar estado
+
+class MensajeChatData(BaseModel): # <-- NUEVO: Para recibir mensajes del chat
+    mensaje: str
 
 class ActualizarPerfilData(BaseModel):
     nombres: Optional[str] = None
@@ -66,7 +72,7 @@ class NuevoProveedorData(BaseModel):
     pais: Optional[str] = "Perú"
     ciudad: Optional[str] = ""
     estado: Optional[str] = "Activo"
-    api_config: Optional[dict] = None # <-- NUEVO: Para guardar credenciales
+    api_config: Optional[dict] = None
 
 class ActualizarProveedorData(BaseModel):
     razon_social: Optional[str] = None
@@ -76,12 +82,12 @@ class ActualizarProveedorData(BaseModel):
     pais: Optional[str] = None
     ciudad: Optional[str] = None
     estado: Optional[str] = None
-    api_config: Optional[dict] = None # <-- NUEVO
+    api_config: Optional[dict] = None
 
 class NuevaRutaData(BaseModel):
     origen: str
     destino: str
-    fecha_salida: str  # <-- NUEVO
+    fecha_salida: str
     hora_salida: str
     tipo_vehiculo: str
     precio: float
@@ -93,14 +99,6 @@ class NuevaHabitacionData(BaseModel):
     precio_noche: float
     amenities: Optional[str] = ""
     estado: Optional[str] = "Disponible"
-
-class NuevaRutaData(BaseModel):
-    origen: str
-    destino: str
-    hora_salida: str
-    tipo_vehiculo: str
-    precio: float
-    estado: Optional[str] = "Activo"
 
 class NuevoPlatoData(BaseModel):
     nombre: str
@@ -116,7 +114,6 @@ class NuevoTourData(BaseModel):
     precio: float
     estado: Optional[str] = "Disponible"
 
-# NUEVOS ESQUEMAS PARA ADMIN DE USUARIOS Y PLANES
 class ActualizarUsuarioAdminData(BaseModel):
     nombres: Optional[str] = None
     apellido_paterno: Optional[str] = None
@@ -134,7 +131,6 @@ class ActualizarPlanAdminData(BaseModel):
     destino: Optional[str] = None
     estado: Optional[str] = None
 
-# NUEVOS ESQUEMAS PARA GEOGRAFÍA Y AJUSTES
 class NuevoPaisData(BaseModel):
     nombre: str
     estado: Optional[str] = "Activo"
@@ -153,10 +149,10 @@ class AjustesSistemaData(BaseModel):
     modelos_disponibles: Optional[list] = None
     modelo_por_defecto: Optional[str] = None
     mensaje_bienvenida: Optional[str] = None
-    openrouter_api_key: Optional[str] = None # <-- NUEVO
-    prompt_identidad: Optional[str] = None   # <-- NUEVO
-    prompt_protocolo: Optional[str] = None   # <-- NUEVO
-    prompt_guardrails: Optional[str] = None  # <-- NUEVO
+    openrouter_api_key: Optional[str] = None
+    prompt_identidad: Optional[str] = None
+    prompt_protocolo: Optional[str] = None
+    prompt_guardrails: Optional[str] = None
 
 # ================= RUTAS PRINCIPALES =================
 app.include_router(admin.router)
@@ -178,19 +174,32 @@ def sincronizar_usuario(usuario: dict = Depends(obtener_usuario_actual)):
         return {"mensaje": "Nuevo usuario registrado en la base de datos", "nuevo": True}
     return {"mensaje": "El usuario ya existía en la base de datos", "nuevo": False}
 
+# ==========================================
+# PLANES Y VIAJES
+# ==========================================
+
 @app.get("/api/v1/planes")
 def obtener_mis_planes(usuario: dict = Depends(obtener_usuario_actual)):
     uid = usuario.get("uid")
     docs = db.collection('planes').where('uid', '==', uid).stream()
-    # Filtramos en Python para evitar exigir índices compuestos en Firestore
-    mis_planes = [
-        {"id": doc.id, **doc.to_dict()} 
-        for doc in docs 
-        if doc.to_dict().get("estado", "progreso") not in ["pagado", "confirmado"]
-    ]
+    
+    mis_planes = []
+    for doc in docs:
+        data = doc.to_dict()
+        
+        # Formatear la fecha a ISO
+        if 'fecha_creacion' in data and data['fecha_creacion'] is not None:
+            try:
+                data['fecha_creacion'] = data['fecha_creacion'].isoformat()
+            except Exception:
+                pass
+                
+        mis_planes.append({"id": doc.id, **data})
+            
+    # Ordenar los planes: los más recientes arriba
+    mis_planes.sort(key=lambda x: x.get('fecha_creacion', ''), reverse=True)
     return mis_planes
 
-# NUEVO ENDPOINT PARA LA MOCHILA DEL VIAJERO
 @app.get("/api/v1/viajes")
 def obtener_mis_viajes(usuario: dict = Depends(obtener_usuario_actual)):
     uid = usuario.get("uid")
@@ -205,7 +214,13 @@ def obtener_mis_viajes(usuario: dict = Depends(obtener_usuario_actual)):
 @app.post("/api/v1/planes")
 def crear_plan(payload: NuevoPlanData, usuario: dict = Depends(obtener_usuario_actual)):
     uid = usuario.get("uid")
-    nuevo_plan = {"uid": uid, "titulo": payload.titulo, "destino": payload.destino, "estado": "progreso"}
+    nuevo_plan = {
+        "uid": uid, 
+        "titulo": payload.titulo, 
+        "destino": payload.destino, 
+        "estado": "progreso",
+        "fecha_creacion": datetime.datetime.utcnow() # <-- ESTAMPA DE TIEMPO AGREGADA
+    }
     doc_ref = db.collection('planes').document()
     doc_ref.set(nuevo_plan)
     return {"id": doc_ref.id, "mensaje": "Plan creado con éxito"}
@@ -216,8 +231,14 @@ def actualizar_plan(plan_id: str, payload: ActualizarPlanData, usuario: dict = D
     doc_ref = db.collection('planes').document(plan_id)
     if not doc_ref.get().exists or doc_ref.get().to_dict().get("uid") != uid:
         raise HTTPException(status_code=403, detail="No autorizado")
-    doc_ref.update({"titulo": payload.titulo})
-    return {"mensaje": "Nombre del plan actualizado"}
+    
+    # Extraer solo los datos que no son nulos
+    datos_actualizar = {k: v for k, v in payload.dict().items() if v is not None}
+    
+    if datos_actualizar:
+        doc_ref.update(datos_actualizar)
+        
+    return {"mensaje": "Plan actualizado correctamente"}
 
 @app.get("/api/v1/planes/{plan_id}")
 def obtener_plan(plan_id: str, usuario: dict = Depends(obtener_usuario_actual)):
@@ -237,6 +258,162 @@ def eliminar_plan(plan_id: str, usuario: dict = Depends(obtener_usuario_actual))
         raise HTTPException(status_code=403, detail="No autorizado")
     doc_ref.delete()
     return {"mensaje": "Plan eliminado permanentemente"}
+
+# ==========================================
+# CEREBRO IA: ENDPOINTS DEL CHAT (NUEVOS)
+# ==========================================
+
+@app.get("/api/v1/planes/{plan_id}/mensajes")
+def obtener_mensajes(plan_id: str, usuario: dict = Depends(obtener_usuario_actual)):
+    uid = usuario.get("uid")
+    plan_ref = db.collection('planes').document(plan_id)
+    
+    if not plan_ref.get().exists or plan_ref.get().to_dict().get("uid") != uid:
+        raise HTTPException(status_code=403, detail="No autorizado")
+        
+    mensajes_ref = plan_ref.collection('mensajes')
+    mensajes_docs = list(mensajes_ref.order_by('fecha').get())
+    
+    # INYECCIÓN INTELIGENTE DEL MENSAJE DE BIENVENIDA
+    if len(mensajes_docs) == 0:
+        ajustes_doc = db.collection('sistema').document('configuracion').get()
+        ajustes = ajustes_doc.to_dict() if ajustes_doc.exists else {}
+        msj_bienvenida = ajustes.get("mensaje_bienvenida", "¡Hola {nombre}! Soy el Agente JalasPe, tu experto local...")
+        
+        # Obtener nombre real del viajero
+        user_doc = db.collection('usuarios').document(usuario.get("email")).get()
+        nombre = user_doc.to_dict().get("nombres", "Viajero") if user_doc.exists and user_doc.to_dict().get("nombres") else "Viajero"
+        
+        msj_bienvenida = msj_bienvenida.replace("{nombre}", nombre)
+        
+        # Guardar en Firestore para que sea el primer mensaje histórico
+        mensajes_ref.add({
+            "rol": "assistant",
+            "contenido": msj_bienvenida,
+            "fecha": datetime.datetime.utcnow()
+        })
+        # Recargar los documentos
+        mensajes_docs = list(mensajes_ref.order_by('fecha').get())
+    
+    mensajes = [{"id": d.id, **d.to_dict()} for d in mensajes_docs]
+    
+    for msg in mensajes:
+        if 'fecha' in msg and msg['fecha'] is not None:
+            msg['fecha'] = msg['fecha'].isoformat()
+            
+    return mensajes
+
+@app.post("/api/v1/planes/{plan_id}/chat")
+def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = Depends(obtener_usuario_actual)):
+    uid = usuario.get("uid")
+    plan_ref = db.collection('planes').document(plan_id)
+    
+    if not plan_ref.get().exists or plan_ref.get().to_dict().get("uid") != uid:
+        raise HTTPException(status_code=403, detail="No autorizado")
+
+    mensajes_ref = plan_ref.collection('mensajes')
+    
+    # 1. Guardar mensaje del usuario
+    mensajes_ref.add({
+        "rol": "user",
+        "contenido": payload.mensaje,
+        "fecha": datetime.datetime.utcnow()
+    })
+
+    # 2. Extraer configuración de la IA
+    ajustes_doc = db.collection('sistema').document('configuracion').get()
+    ajustes = ajustes_doc.to_dict() if ajustes_doc.exists else {}
+    
+    api_key = ajustes.get("openrouter_api_key", "")
+    modelo = ajustes.get("modelo_por_defecto", "openai/gpt-4o-mini")
+    prompt_identidad = ajustes.get("prompt_identidad", "")
+    prompt_protocolo = ajustes.get("prompt_protocolo", "")
+    prompt_guardrails = ajustes.get("prompt_guardrails", "")
+
+    if not api_key:
+        fallback_msg = "El equipo de JalasPe está afinando mis motores. Aún no tengo una llave de OpenRouter configurada."
+        mensajes_ref.add({"rol": "assistant", "contenido": fallback_msg, "fecha": datetime.datetime.utcnow()})
+        return {"respuesta": fallback_msg}
+
+    # 3. Ensamblar Contexto Dinámico (Catálogo de Proveedores)
+    contexto_inventario = "\n\n--- INVENTARIO Y SERVICIOS DISPONIBLES EN JALASPE ---\n"
+    proveedores = db.collection('proveedores').where("estado", "==", "Activo").stream()
+    for prov in proveedores:
+        p_data = prov.to_dict()
+        pid = prov.id
+        contexto_inventario += f"\nProveedor: {p_data.get('nombre_comercial')} | Categoría: {p_data.get('categoria')} | Ciudad: {p_data.get('ciudad')}\n"
+        
+        if p_data.get('categoria') == 'Transporte':
+            rutas = db.collection('proveedores').document(pid).collection('rutas').where("estado", "==", "Activo").stream()
+            for r in rutas:
+                r_data = r.to_dict()
+                contexto_inventario += f"  - RUTA: {r_data.get('origen')} a {r_data.get('destino')} | Vehículo: {r_data.get('tipo_vehiculo')} | Precio: {r_data.get('precio')}\n"
+        
+        elif p_data.get('categoria') == 'Hospedaje':
+            habs = db.collection('proveedores').document(pid).collection('habitaciones').where("estado", "==", "Disponible").stream()
+            for h in habs:
+                h_data = h.to_dict()
+                contexto_inventario += f"  - HABITACIÓN: {h_data.get('tipo')} | Capacidad: {h_data.get('capacidad')} | Noche: {h_data.get('precio_noche')}\n"
+
+        elif p_data.get('categoria') == 'Restaurante':
+            platos = db.collection('proveedores').document(pid).collection('platos').where("estado", "==", "Disponible").stream()
+            for p in platos:
+                pl_data = p.to_dict()
+                contexto_inventario += f"  - PLATO: {pl_data.get('nombre')} ({pl_data.get('categoria')}) | Precio: {pl_data.get('precio')}\n"
+
+        elif p_data.get('categoria') == 'Operador Turístico':
+            tours = db.collection('proveedores').document(pid).collection('tours').where("estado", "==", "Disponible").stream()
+            for t in tours:
+                t_data = t.to_dict()
+                contexto_inventario += f"  - TOUR: {t_data.get('nombre')} | Duración: {t_data.get('duracion')} | Precio: {t_data.get('precio')}\n"
+
+    # 4. Construir Prompt del Sistema y traer historial
+    system_prompt = f"{prompt_identidad}\n\n{prompt_protocolo}\n\n{prompt_guardrails}{contexto_inventario}"
+    
+    # Traer últimos 15 mensajes para mantener contexto sin desbordar tokens
+    historial_docs = mensajes_ref.order_by("fecha").limit_to_last(15).get()
+    mensajes_ia = [{"role": "system", "content": system_prompt}]
+    
+    for doc in historial_docs:
+        data = doc.to_dict()
+        mensajes_ia.append({"role": data["rol"], "content": data["contenido"]})
+
+    # 5. Llamada a OpenRouter
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "HTTP-Referer": "https://jalaspe.web.app",
+        "X-Title": "JalasPe",
+        "Content-Type": "application/json"
+    }
+    
+    data = {
+        "model": modelo,
+        "messages": mensajes_ia,
+        "temperature": 0.2
+    }
+    
+    try:
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
+        if response.status_code == 200:
+            ia_respuesta = response.json()["choices"][0]["message"]["content"]
+        else:
+            ia_respuesta = f"Hubo un error con la conexión a la IA (Status {response.status_code})."
+    except Exception as e:
+        ia_respuesta = "Lo siento, tuve un problema interno de red al intentar pensar tu respuesta."
+
+    # 6. Guardar y retornar respuesta
+    mensajes_ref.add({
+        "rol": "assistant",
+        "contenido": ia_respuesta,
+        "fecha": datetime.datetime.utcnow()
+    })
+    
+    return {"respuesta": ia_respuesta}
+
+
+# ==========================================
+# PERFIL
+# ==========================================
 
 @app.get("/api/v1/perfil")
 def obtener_perfil(usuario: dict = Depends(obtener_usuario_actual)):
@@ -456,7 +633,7 @@ def admin_eliminar_plan(plan_id: str, usuario: dict = Depends(obtener_usuario_ac
     return {"mensaje": "Plan eliminado permanentemente"}
 
 # ==========================================
-# GEOGRAFÍA: PAÍSES
+# GEOGRAFÍA: PAÍSES Y CIUDADES
 # ==========================================
 
 @app.get("/api/v1/admin/paises")
@@ -478,10 +655,6 @@ def eliminar_pais(pais_id: str, usuario: dict = Depends(obtener_usuario_actual))
         raise HTTPException(status_code=403, detail="Acceso denegado")
     db.collection('paises').document(pais_id).delete()
     return {"mensaje": "País eliminado"}
-
-# ==========================================
-# GEOGRAFÍA: CIUDADES (Subcolección)
-# ==========================================
 
 @app.get("/api/v1/admin/paises/{pais_id}/ciudades")
 def obtener_ciudades(pais_id: str):
