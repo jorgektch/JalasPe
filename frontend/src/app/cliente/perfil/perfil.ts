@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router'; // <-- Inyectamos el Router
+import { Router } from '@angular/router'; 
 import { AuthService } from '../../auth/services/auth';
 import { ApiService } from '../../services/api.service'; 
 import { ToastrService } from 'ngx-toastr';
@@ -12,57 +12,79 @@ import { ToastrService } from 'ngx-toastr';
 export class PerfilComponent implements OnInit {
   usuarioEmail: string | null = '';
   
-  // ... (Tus variables iniciales de estado)
   cargando = true;
   guardando = false;
-  cambiandoPassword = false; // <-- Nueva variable para el loader
+  cambiandoPassword = false;
 
   perfilData: any = {
-    nombres: '',
-    apellido_paterno: '',
-    apellido_materno: '',
-    username: '',
-    fecha_nacimiento: '',
-    celular: '',
-    pais: 'PE', 
-    ciudad: '',
-    direccion: ''
+    nombres: '', apellido_paterno: '', apellido_materno: '',
+    username: '', fecha_nacimiento: '', celular: '',
+    pais: '', ciudad: '', direccion: ''
   };
+
+  // LISTAS DINÁMICAS
+  paises: any[] = [];
+  ciudades: any[] = [];
 
   constructor(
     private authService: AuthService,
     private apiService: ApiService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
-    private router: Router // <-- Lo agregamos al constructor
+    private router: Router
   ) {}
 
   async ngOnInit() {
-    // LA MAGIA: Ahora Angular espera a que Firebase termine de cargar la sesión de IndexedDB
     const user = await this.authService.esperarUsuarioAutenticado();
     
     if (user) {
       this.usuarioEmail = user.email;
-      await this.cargarPerfil();
+      await this.cargarPerfilYPaises();
     } else {
-      // Si realmente es null (el usuario cerró sesión), lo mandamos al login
       this.cargando = false;
       this.cdr.detectChanges();
       this.router.navigate(['/auth/login']);
     }
   }
 
-  async cargarPerfil() {
+  async cargarPerfilYPaises() {
     try {
       this.cargando = true;
-      const data = await this.apiService.getPerfil();
+      
+      // Cargamos el perfil y los países al mismo tiempo
+      const [data, listaPaises] = await Promise.all([
+        this.apiService.getPerfil(),
+        this.apiService.getPaises()
+      ]);
+      
       this.perfilData = { ...this.perfilData, ...data };
+      this.paises = listaPaises;
+
+      // Si el usuario ya tenía un país guardado, cargamos sus ciudades
+      if (this.perfilData.pais) {
+        await this.cargarCiudades(this.perfilData.pais);
+      }
     } catch (error) {
       this.toastr.error("No pudimos cargar tus datos", "Error");
     } finally {
       this.cargando = false;
       this.cdr.detectChanges();
     }
+  }
+
+  async cargarCiudades(nombrePais: string) {
+    const paisSeleccionado = this.paises.find(p => p.nombre === nombrePais);
+    if (paisSeleccionado) {
+      this.ciudades = await this.apiService.getCiudades(paisSeleccionado.id);
+    } else {
+      this.ciudades = [];
+    }
+    this.cdr.detectChanges();
+  }
+
+  async onPaisCambio() {
+    this.perfilData.ciudad = ''; // Limpiar ciudad anterior
+    await this.cargarCiudades(this.perfilData.pais);
   }
 
   async guardarDatosPersonales(event: Event) {
@@ -106,19 +128,15 @@ export class PerfilComponent implements OnInit {
 
     try {
       this.cambiandoPassword = true;
-      this.cdr.detectChanges(); // Mostramos el loader
+      this.cdr.detectChanges();
 
-      // Llamamos a nuestro servicio de Firebase
       await this.authService.actualizarPassword(actual, nueva);
       
       this.toastr.success("Tu contraseña ha sido actualizada con éxito", "Seguridad");
-      (event.target as HTMLFormElement).reset(); // Limpiamos el formulario
+      (event.target as HTMLFormElement).reset(); 
 
     } catch (error: any) {
-      console.error("Error en seguridad:", error);
       const errorCode = error.code;
-
-      // Manejamos los errores típicos de Firebase
       if (errorCode === 'auth/invalid-credential' || errorCode === 'auth/wrong-password') {
         this.toastr.error("La contraseña actual es incorrecta", "Acceso denegado");
       } else {
@@ -126,7 +144,7 @@ export class PerfilComponent implements OnInit {
       }
     } finally {
       this.cambiandoPassword = false;
-      this.cdr.detectChanges(); // Ocultamos el loader
+      this.cdr.detectChanges();
     }
   }
 }

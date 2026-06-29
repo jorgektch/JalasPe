@@ -16,18 +16,18 @@
 
     <div class="flex-1 overflow-y-auto p-4 md:p-8">
       
-      <div class="max-w-4xl mx-auto mb-8">
+      <!-- CONTENEDOR ALINEADO A MAX-W-6XL -->
+      <div class="max-w-6xl mx-auto mb-8">
         <h3 class="text-3xl font-bold text-jalaspe-blue tracking-tight">Mi Perfil</h3>
         <p class="text-jalaspe-grey mt-2">Gestiona tu identidad, datos de contacto y la seguridad de tu cuenta.</p>
       </div>
 
-      <div class="max-w-4xl mx-auto space-y-8">
+      <div class="max-w-6xl mx-auto space-y-8 pb-12">
 
         <form (submit)="guardarDatosPersonales($event)">
           
           <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 p-6 md:p-8 mb-6 relative">
             
-            <!-- Bloqueador visual mientras carga -->
             <div *ngIf="cargando" class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
               <svg class="animate-spin h-8 w-8 text-jalaspe-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             </div>
@@ -81,20 +81,22 @@
                 <input type="tel" name="celular" [(ngModel)]="perfilData.celular" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue" placeholder="+51 987 654 321">
               </div>
               
+              <!-- SELECT DINÁMICO DE PAÍS -->
               <div>
                 <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">País</label>
-                <select name="pais" [(ngModel)]="perfilData.pais" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue">
-                  <option value="PE">Perú</option>
-                  <option value="MX">México</option>
-                  <option value="CO">Colombia</option>
-                  <option value="CL">Chile</option>
-                  <option value="AR">Argentina</option>
-                  <option value="OTRO">Otro país</option>
+                <select name="pais" [(ngModel)]="perfilData.pais" (change)="onPaisCambio()" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue font-bold">
+                  <option value="" disabled selected>Selecciona tu país...</option>
+                  <option *ngFor="let p of paises" [value]="p.nombre">{{ p.nombre }}</option>
                 </select>
               </div>
+
+              <!-- SELECT DINÁMICO DE CIUDAD -->
               <div>
                 <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Ciudad</label>
-                <input type="text" name="ciudad" [(ngModel)]="perfilData.ciudad" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue" placeholder="Lima">
+                <select name="ciudad" [(ngModel)]="perfilData.ciudad" [disabled]="ciudades.length === 0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 focus:border-jalaspe-blue transition-all outline-none text-jalaspe-blue disabled:opacity-50 disabled:bg-gray-100">
+                  <option value="" disabled selected>{{ perfilData.pais ? 'Selecciona tu ciudad...' : 'Primero elige un país' }}</option>
+                  <option *ngFor="let c of ciudades" [value]="c.nombre">{{ c.nombre }}</option>
+                </select>
               </div>
 
               <div class="md:col-span-2">
@@ -125,7 +127,8 @@
                 <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Contraseña Actual</label>
                 <input type="password" id="actualPass" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all outline-none text-jalaspe-blue" placeholder="••••••••" required>
               </div>
-              <div class="hidden md:block"></div> <div>
+              <div class="hidden md:block"></div> 
+              <div>
                 <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Nueva Contraseña</label>
                 <input type="password" id="nuevaPass" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all outline-none text-jalaspe-blue" placeholder="••••••••" minlength="6" required>
               </div>
