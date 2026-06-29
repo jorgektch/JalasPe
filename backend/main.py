@@ -178,8 +178,25 @@ def sincronizar_usuario(usuario: dict = Depends(obtener_usuario_actual)):
 def obtener_mis_planes(usuario: dict = Depends(obtener_usuario_actual)):
     uid = usuario.get("uid")
     docs = db.collection('planes').where('uid', '==', uid).stream()
-    mis_planes = [{"id": doc.id, **doc.to_dict()} for doc in docs]
+    # Filtramos en Python para evitar exigir índices compuestos en Firestore
+    mis_planes = [
+        {"id": doc.id, **doc.to_dict()} 
+        for doc in docs 
+        if doc.to_dict().get("estado", "progreso") not in ["pagado", "confirmado"]
+    ]
     return mis_planes
+
+# NUEVO ENDPOINT PARA LA MOCHILA DEL VIAJERO
+@app.get("/api/v1/viajes")
+def obtener_mis_viajes(usuario: dict = Depends(obtener_usuario_actual)):
+    uid = usuario.get("uid")
+    docs = db.collection('planes').where('uid', '==', uid).stream()
+    mis_viajes = [
+        {"id": doc.id, **doc.to_dict()} 
+        for doc in docs 
+        if doc.to_dict().get("estado") in ["pagado", "confirmado"]
+    ]
+    return mis_viajes
 
 @app.post("/api/v1/planes")
 def crear_plan(payload: NuevoPlanData, usuario: dict = Depends(obtener_usuario_actual)):

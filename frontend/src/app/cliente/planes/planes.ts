@@ -13,7 +13,6 @@ export class PlanesComponent implements OnInit {
   usuarioEmail: string | null = 'Cargando...';
   misPlanes: any[] = [];
   
-  // Variables de Estado
   cargando: boolean = true;
   eliminando: boolean = false; 
   mostrarModalEliminar: boolean = false;
@@ -52,6 +51,7 @@ export class PlanesComponent implements OnInit {
   async crearNuevoPlan() {
     try {
       this.cargando = true;
+      this.cdr.detectChanges(); // Para que salga el loader si quisieras ponerlo
       const res = await this.apiService.crearPlan('Mi Nueva Aventura', 'Sin definir');
       this.toastr.success("¡Plan creado! Empecemos a organizar.", "Éxito");
       this.router.navigate(['/app/plan', res.id]); 
@@ -61,8 +61,6 @@ export class PlanesComponent implements OnInit {
       this.cdr.detectChanges();
     }
   }
-
-  // === NUEVA LÓGICA DEL MODAL DE ELIMINACIÓN ===
 
   abrirModalEliminar(planId: string, event: Event) {
     event.preventDefault();
@@ -91,18 +89,8 @@ export class PlanesComponent implements OnInit {
       this.toastr.error("No se pudo eliminar el plan", "Error");
     } finally {
       this.eliminando = false;
-      this.cerrarModalEliminar(); // Escondemos el modal al terminar
+      this.cerrarModalEliminar();
       this.cdr.detectChanges();
-    }
-  }
-
-  async cerrarSesion() {
-    try {
-      await this.authService.logout();
-      this.toastr.info("Has cerrado sesión", "Hasta pronto");
-      this.router.navigate(['/auth/login']);
-    } catch (error) {
-      this.toastr.error("Error al cerrar sesión", "Error");
     }
   }
 }

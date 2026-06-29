@@ -242,4 +242,9 @@ export class ApiService {
     const url = `${environment.apiUrl}/api/v1/admin/ajustes`;
     return firstValueFrom(this.http.patch<any>(url, datos));
   }
+
+  async getMisViajes() {
+    const url = `${environment.apiUrl}/api/v1/viajes`;
+    return firstValueFrom(this.http.get<any[]>(url));
+  }
 }

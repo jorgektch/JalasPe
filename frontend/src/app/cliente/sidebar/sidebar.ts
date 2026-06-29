@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'; // <-- Añadimos OnDestroy
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'; 
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth';
 import { ApiService } from '../../services/api.service';
 import { ToastrService } from 'ngx-toastr';
-import { Subscription } from 'rxjs'; // <-- Importamos Subscription
+import { Subscription } from 'rxjs'; 
 
 @Component({
   selector: 'app-sidebar',
@@ -13,9 +13,11 @@ import { Subscription } from 'rxjs'; // <-- Importamos Subscription
 export class SidebarComponent implements OnInit, OnDestroy {
   menuAbierto = false;
   inicialUsuario = 'U';
-  misPlanes: any[] = [];
   
-  private actualizacionSub!: Subscription; // <-- Variable para guardar nuestra conexión
+  misPlanes: any[] = [];
+  misViajes: any[] = []; // <-- NUEVO
+  
+  private actualizacionSub!: Subscription; 
 
   constructor(
     private authService: AuthService,
@@ -31,14 +33,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.inicialUsuario = user.email.charAt(0).toUpperCase();
       await this.cargarPlanesMenu();
 
-      // <-- LA MAGIA: El Sidebar se queda "escuchando" el Walkie-Talkie
       this.actualizacionSub = this.apiService.planActualizado$.subscribe(() => {
         this.cargarPlanesMenu();
       });
     }
   }
 
-  // Buenas prácticas: Apagamos el Walkie-Talkie si el componente se destruye
   ngOnDestroy() {
     if (this.actualizacionSub) {
       this.actualizacionSub.unsubscribe();
@@ -47,20 +47,21 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   async cargarPlanesMenu() {
     try {
-      this.misPlanes = await this.apiService.getMisPlanes();
+      // Cargamos ambas listas en paralelo
+      const [planes, viajes] = await Promise.all([
+        this.apiService.getMisPlanes(),
+        this.apiService.getMisViajes()
+      ]);
+      this.misPlanes = planes;
+      this.misViajes = viajes;
       this.cdr.detectChanges();
     } catch (error) {
-      console.error("Error al cargar menú de planes", error);
+      console.error("Error al cargar menú", error);
     }
   }
 
-  toggleMenu() {
-    this.menuAbierto = !this.menuAbierto;
-  }
-
-  cerrarMenu() {
-    this.menuAbierto = false;
-  }
+  toggleMenu() { this.menuAbierto = !this.menuAbierto; }
+  cerrarMenu() { this.menuAbierto = false; }
 
   async cerrarSesion() {
     try {

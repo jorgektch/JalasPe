@@ -1,0 +1,109 @@
+<div class="flex h-screen bg-[#f8f9fa] font-sans text-jalaspe-blue relative">
+  <app-sidebar></app-sidebar>
+
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa]">
+    
+    <header class="h-16 bg-white border-b border-gray-100 flex items-center px-4 md:px-8 z-0">
+      <a routerLink="/app/viajes" class="mr-4 text-gray-400 hover:text-purple-600 transition-colors cursor-pointer" title="Volver a la mochila">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      </a>
+      <h2 class="text-xl font-bold text-jalaspe-blue">Consola de Viaje</h2>
+    </header>
+
+    <div *ngIf="cargando" class="flex-1 flex flex-col items-center justify-center text-gray-400">
+        <svg class="animate-spin h-10 w-10 mb-4 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p class="font-medium">Cargando itinerario...</p>
+    </div>
+
+    <div *ngIf="!cargando && viaje" class="flex-1 overflow-y-auto p-4 md:p-8">
+      <div class="max-w-6xl mx-auto">
+          
+        <!-- Banner del Viaje -->
+        <div class="bg-gradient-to-r from-purple-900 to-purple-700 rounded-3xl p-8 mb-8 text-white shadow-lg relative overflow-hidden">
+            <svg class="absolute right-0 top-0 w-64 h-64 text-white opacity-5 transform translate-x-1/4 -translate-y-1/4" fill="currentColor" viewBox="0 0 24 24"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <div class="relative z-10">
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-lg text-xs font-bold uppercase tracking-wider mb-4 inline-block">Viaje Confirmado</span>
+                <h3 class="text-3xl md:text-4xl font-black mb-2">{{ viaje.titulo }}</h3>
+                <p class="text-purple-200 font-medium text-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    {{ viaje.destino }}
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- COLUMNA IZQUIERDA: Cronograma -->
+            <div class="lg:col-span-2">
+                <h4 class="text-xl font-bold text-jalaspe-blue mb-6 border-b border-gray-200 pb-3">Itinerario Día a Día</h4>
+                
+                <div *ngFor="let dia of cronograma" class="mb-8">
+                    <h5 class="text-sm font-black text-purple-600 uppercase tracking-wider mb-4 bg-purple-50 inline-block px-3 py-1 rounded-lg">{{ dia.dia }}</h5>
+                    
+                    <div class="space-y-0 relative before:absolute before:inset-0 before:ml-[1.4rem] before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-100">
+                        <div *ngFor="let item of dia.items" class="relative flex items-start mb-6">
+                            <div class="flex items-center justify-center w-11 h-11 rounded-full border-4 border-white bg-gray-50 text-gray-500 shadow-sm flex-shrink-0 z-10"
+                                [ngClass]="{
+                                    'text-blue-500': item.tipo === 'transporte',
+                                    'text-purple-500': item.tipo === 'hospedaje',
+                                    'text-orange-500': item.tipo === 'restaurante',
+                                    'text-emerald-500': item.tipo === 'tour'
+                                }">
+                                <!-- Iconos Dinámicos según tipo -->
+                                <svg *ngIf="item.tipo === 'transporte'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                <svg *ngIf="item.tipo === 'hospedaje'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                <svg *ngIf="item.tipo === 'tour'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <svg *ngIf="item.tipo === 'restaurante'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5h16z"></path></svg>
+                            </div>
+                            <div class="ml-4 mt-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm w-full hover:border-purple-200 transition-colors">
+                                <span class="text-xs font-bold text-gray-400 block mb-1">{{ item.hora }}</span>
+                                <h6 class="text-base font-bold text-jalaspe-blue">{{ item.titulo }}</h6>
+                                <p class="text-sm text-gray-500 mt-1">{{ item.desc }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Billetera Digital -->
+            <div class="lg:col-span-1">
+                <h4 class="text-xl font-bold text-jalaspe-blue mb-6 border-b border-gray-200 pb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    Billetera Digital
+                </h4>
+
+                <div class="space-y-4">
+                    <!-- Ticket Mockup -->
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full"></div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Transporte</span>
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        </div>
+                        <h5 class="text-lg font-bold mb-1">Boleto Cruz del Sur</h5>
+                        <p class="text-sm text-gray-400 mb-4">Lima ➔ Paracas</p>
+                        <button class="w-full py-2 bg-white/10 hover:bg-white/20 transition-colors rounded-lg text-sm font-bold border border-white/10 backdrop-blur-sm flex justify-center items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Ver Código QR
+                        </button>
+                    </div>
+
+                    <!-- Contacto de Emergencia Mockup -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+                        <h5 class="text-sm font-bold text-blue-800 mb-2 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            Soporte JalasPe
+                        </h5>
+                        <p class="text-xs text-blue-600 mb-3">Si tienes algún problema durante tu viaje, nuestro equipo está 24/7 para ayudarte.</p>
+                        <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white transition-colors rounded-lg text-sm font-bold shadow-sm">
+                            Contactar por WhatsApp
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
