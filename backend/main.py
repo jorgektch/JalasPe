@@ -3,11 +3,12 @@ import datetime
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from firebase_admin import auth
-from database import db
-from routers import admin
-from pydantic import BaseModel
 from typing import Optional
+from pydantic import BaseModel
+
+# ================= IMPORTAR CONEXIÓN Y RUTAS =================
+from database import db, auth
+from routers import admin
 
 app = FastAPI(title="JalasPe API - Monorepo")
 
@@ -48,9 +49,9 @@ class NuevoPlanData(BaseModel):
 
 class ActualizarPlanData(BaseModel):
     titulo: Optional[str] = None
-    estado: Optional[str] = None # <-- NUEVO: Permitir cambiar estado
+    estado: Optional[str] = None 
 
-class MensajeChatData(BaseModel): # <-- NUEVO: Para recibir mensajes del chat
+class MensajeChatData(BaseModel): 
     mensaje: str
 
 class ActualizarPerfilData(BaseModel):
@@ -187,7 +188,6 @@ def obtener_mis_planes(usuario: dict = Depends(obtener_usuario_actual)):
     for doc in docs:
         data = doc.to_dict()
         
-        # Formatear la fecha a ISO
         if 'fecha_creacion' in data and data['fecha_creacion'] is not None:
             try:
                 data['fecha_creacion'] = data['fecha_creacion'].isoformat()
@@ -196,7 +196,6 @@ def obtener_mis_planes(usuario: dict = Depends(obtener_usuario_actual)):
                 
         mis_planes.append({"id": doc.id, **data})
             
-    # Ordenar los planes: los más recientes arriba
     mis_planes.sort(key=lambda x: x.get('fecha_creacion', ''), reverse=True)
     return mis_planes
 
@@ -219,7 +218,7 @@ def crear_plan(payload: NuevoPlanData, usuario: dict = Depends(obtener_usuario_a
         "titulo": payload.titulo, 
         "destino": payload.destino, 
         "estado": "progreso",
-        "fecha_creacion": datetime.datetime.utcnow() # <-- ESTAMPA DE TIEMPO AGREGADA
+        "fecha_creacion": datetime.datetime.utcnow() 
     }
     doc_ref = db.collection('planes').document()
     doc_ref.set(nuevo_plan)
@@ -232,7 +231,6 @@ def actualizar_plan(plan_id: str, payload: ActualizarPlanData, usuario: dict = D
     if not doc_ref.get().exists or doc_ref.get().to_dict().get("uid") != uid:
         raise HTTPException(status_code=403, detail="No autorizado")
     
-    # Extraer solo los datos que no son nulos
     datos_actualizar = {k: v for k, v in payload.dict().items() if v is not None}
     
     if datos_actualizar:
@@ -260,7 +258,7 @@ def eliminar_plan(plan_id: str, usuario: dict = Depends(obtener_usuario_actual))
     return {"mensaje": "Plan eliminado permanentemente"}
 
 # ==========================================
-# CEREBRO IA: ENDPOINTS DEL CHAT (NUEVOS)
+# CEREBRO IA: ENDPOINTS DEL CHAT
 # ==========================================
 
 @app.get("/api/v1/planes/{plan_id}/mensajes")
@@ -274,25 +272,21 @@ def obtener_mensajes(plan_id: str, usuario: dict = Depends(obtener_usuario_actua
     mensajes_ref = plan_ref.collection('mensajes')
     mensajes_docs = list(mensajes_ref.order_by('fecha').get())
     
-    # INYECCIÓN INTELIGENTE DEL MENSAJE DE BIENVENIDA
     if len(mensajes_docs) == 0:
         ajustes_doc = db.collection('sistema').document('configuracion').get()
         ajustes = ajustes_doc.to_dict() if ajustes_doc.exists else {}
         msj_bienvenida = ajustes.get("mensaje_bienvenida", "¡Hola {nombre}! Soy el Agente JalasPe, tu experto local...")
         
-        # Obtener nombre real del viajero
         user_doc = db.collection('usuarios').document(usuario.get("email")).get()
         nombre = user_doc.to_dict().get("nombres", "Viajero") if user_doc.exists and user_doc.to_dict().get("nombres") else "Viajero"
         
         msj_bienvenida = msj_bienvenida.replace("{nombre}", nombre)
         
-        # Guardar en Firestore para que sea el primer mensaje histórico
         mensajes_ref.add({
             "rol": "assistant",
             "contenido": msj_bienvenida,
             "fecha": datetime.datetime.utcnow()
         })
-        # Recargar los documentos
         mensajes_docs = list(mensajes_ref.order_by('fecha').get())
     
     mensajes = [{"id": d.id, **d.to_dict()} for d in mensajes_docs]
@@ -313,14 +307,12 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
 
     mensajes_ref = plan_ref.collection('mensajes')
     
-    # 1. Guardar mensaje del usuario
     mensajes_ref.add({
         "rol": "user",
         "contenido": payload.mensaje,
         "fecha": datetime.datetime.utcnow()
     })
 
-    # 2. Extraer configuración de la IA
     ajustes_doc = db.collection('sistema').document('configuracion').get()
     ajustes = ajustes_doc.to_dict() if ajustes_doc.exists else {}
     
@@ -335,7 +327,6 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
         mensajes_ref.add({"rol": "assistant", "contenido": fallback_msg, "fecha": datetime.datetime.utcnow()})
         return {"respuesta": fallback_msg}
 
-    # 3. Ensamblar Contexto Dinámico (Catálogo de Proveedores)
     contexto_inventario = "\n\n--- INVENTARIO Y SERVICIOS DISPONIBLES EN JALASPE ---\n"
     proveedores = db.collection('proveedores').where("estado", "==", "Activo").stream()
     for prov in proveedores:
@@ -367,10 +358,8 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
                 t_data = t.to_dict()
                 contexto_inventario += f"  - TOUR: {t_data.get('nombre')} | Duración: {t_data.get('duracion')} | Precio: {t_data.get('precio')}\n"
 
-    # 4. Construir Prompt del Sistema y traer historial
     system_prompt = f"{prompt_identidad}\n\n{prompt_protocolo}\n\n{prompt_guardrails}{contexto_inventario}"
     
-    # Traer últimos 15 mensajes para mantener contexto sin desbordar tokens
     historial_docs = mensajes_ref.order_by("fecha").limit_to_last(15).get()
     mensajes_ia = [{"role": "system", "content": system_prompt}]
     
@@ -378,7 +367,6 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
         data = doc.to_dict()
         mensajes_ia.append({"role": data["rol"], "content": data["contenido"]})
 
-    # 5. Llamada a OpenRouter
     headers = {
         "Authorization": f"Bearer {api_key}",
         "HTTP-Referer": "https://jalaspe.web.app",
@@ -401,7 +389,6 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
     except Exception as e:
         ia_respuesta = "Lo siento, tuve un problema interno de red al intentar pensar tu respuesta."
 
-    # 6. Guardar y retornar respuesta
     mensajes_ref.add({
         "rol": "assistant",
         "contenido": ia_respuesta,

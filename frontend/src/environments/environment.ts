@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  apiUrl: '', // <-- IMPORTANTE: Debe estar vacío para usar el Rewrite de Firebase
   firebaseConfig: {
     apiKey: "AIzaSyBwxIxfVsTVmHNPzuPAOBTggv15cXFAG44",
     authDomain: "jalaspe.firebaseapp.com",
