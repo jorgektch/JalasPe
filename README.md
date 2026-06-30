@@ -72,3 +72,16 @@ pip install -r requirements.txt
 # OPENROUTER_API_KEY=tu_api_key
 
 uvicorn main:app --reload --port 8000
+```
+
+### 2. Levantar el Frontend (Angular)
+```bash
+cd frontend
+npm install
+
+# Asegúrate de que environment.development.ts apunte a http://localhost:8000
+
+ng serve
+```
+
+La aplicación estará disponible en http://localhost:4200/app (Clientes) y http://localhost:4200/admin (Staff).
