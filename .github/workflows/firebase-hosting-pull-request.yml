@@ -11,16 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      # 4. Construir Angular
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
-        
-      # ---> EL TRUCO DE DEVOPS: Inyectar timestamp real en el index.html <---
+
+      # ---> EL TRUCO INFALIBLE: Crear un archivo nuevo con la hora exacta <---
       - name: Force unique deploy hash
-        run: sed -i "s/<\/body>/<!-- Deploy $(date) --><\/body>/g" frontend/dist/frontend/browser/index.html
-        
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+        run: echo "Deploy run at $(date)" > frontend/dist/frontend/browser/deploy-timestamp.txt
+
+      # 5. Desplegar Angular a Firebase Hosting
+      - name: Deploy Frontend to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JALASPE }}'
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JALASPE }}
+          channelId: live
           projectId: jalaspe
           entryPoint: ./frontend

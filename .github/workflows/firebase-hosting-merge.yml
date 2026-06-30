@@ -33,9 +33,9 @@ jobs:
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
 
-      # ---> EL TRUCO DE DEVOPS: Inyectar timestamp real en el index.html <---
+      # ---> EL TRUCO INFALIBLE: Crear un archivo nuevo con la hora exacta <---
       - name: Force unique deploy hash
-        run: sed -i "s/<\/body>/<!-- Deploy $(date) --><\/body>/g" frontend/dist/frontend/browser/index.html
+        run: echo "Deploy run at $(date)" > frontend/dist/frontend/browser/deploy-timestamp.txt
 
       # 5. Desplegar Angular a Firebase Hosting
       - name: Deploy Frontend to Firebase Hosting
