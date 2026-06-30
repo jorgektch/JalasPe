@@ -33,6 +33,10 @@ jobs:
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
 
+      # ---> EL TRUCO DE DEVOPS: Forzar hash único <---
+      - name: Force unique deploy hash
+        run: echo "Deploy $(date)" > frontend/dist/frontend/browser/deploy-version.txt
+
       # 5. Desplegar Angular a Firebase Hosting
       - name: Deploy Frontend to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

@@ -10,7 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd frontend && npm ci && npm run build
+      
+      - name: Build Frontend
+        run: cd frontend && npm ci && npm run build
+        
+      # ---> EL TRUCO DE DEVOPS: Forzar hash único <---
+      - name: Force unique deploy hash
+        run: echo "Deploy $(date)" > frontend/dist/frontend/browser/deploy-version.txt
+        
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
