@@ -28,11 +28,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    const user = this.authService.getUsuarioActual();
+    // 1. Cambiamos getUsuarioActual() por la promesa que ESPERA a Firebase
+    const user = await this.authService.esperarUsuarioAutenticado();
     if (user && user.email) {
       this.inicialUsuario = user.email.charAt(0).toUpperCase();
+      
+      // 2. Ahora sí, con el usuario asegurado, cargamos el menú
       await this.cargarPlanesMenu();
 
+      // 3. Suscripción a cambios futuros
       this.actualizacionSub = this.apiService.planActualizado$.subscribe(() => {
         this.cargarPlanesMenu();
       });

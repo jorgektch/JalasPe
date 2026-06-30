@@ -26,6 +26,7 @@ export class ClienteComponent implements OnInit {
     const user = await this.authService.esperarUsuarioAutenticado();
     if (user) {
       this.usuarioEmail = user.email;
+      this.cdr.detectChanges(); // <-- Línea añadida para calmar al compilador
     } else {
       this.router.navigate(['/auth/login']);
     }
