@@ -14,9 +14,9 @@ jobs:
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
         
-      # ---> EL TRUCO DE DEVOPS: Forzar hash único <---
+      # ---> EL TRUCO DE DEVOPS: Inyectar timestamp real en el index.html <---
       - name: Force unique deploy hash
-        run: echo "Deploy $(date)" > frontend/dist/frontend/browser/deploy-version.txt
+        run: sed -i "s/<\/body>/<!-- Deploy $(date) --><\/body>/g" frontend/dist/frontend/browser/index.html
         
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
