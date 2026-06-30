@@ -32,32 +32,48 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- COLUMNA IZQUIERDA: Cronograma -->
+<!-- COLUMNA IZQUIERDA: Cronograma -->
             <div class="lg:col-span-2">
                 <h4 class="text-xl font-bold text-jalaspe-blue mb-6 border-b border-gray-200 pb-3">Itinerario Día a Día</h4>
                 
+                <!-- ESTADO VACÍO (Viaje sin cronograma o 100% libre) -->
+                <div *ngIf="cronograma.length === 0" class="bg-white border border-gray-100 rounded-3xl p-10 text-center shadow-sm">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
+                    </div>
+                    <h5 class="text-xl font-bold text-jalaspe-blue mb-2">Itinerario 100% Flexible</h5>
+                    <p class="text-jalaspe-grey max-w-md mx-auto">Decidiste no atarte a horarios ni cronogramas. Tus pasajes y hospedaje están asegurados a la derecha. ¡Disfruta tu viaje a tu propio ritmo!</p>
+                </div>
+
+                <!-- CRONOGRAMA DINÁMICO DESDE EL LLM -->
                 <div *ngFor="let dia of cronograma" class="mb-8">
                     <h5 class="text-sm font-black text-jalaspe-blue uppercase tracking-wider mb-4 bg-jalaspe-blue/10 inline-block px-3 py-1 rounded-lg">{{ dia.dia }}</h5>
                     
                     <div class="space-y-0 relative before:absolute before:inset-0 before:ml-[1.4rem] before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-100">
-                        <div *ngFor="let item of dia.items" class="relative flex items-start mb-6">
+                        <div *ngFor="let item of dia.items" class="relative flex items-start mb-6 group">
                             
                             <!-- Iconos Dinámicos semánticos -->
-                            <div class="flex items-center justify-center w-11 h-11 rounded-full border-4 border-white bg-gray-50 shadow-sm flex-shrink-0 z-10"
+                            <div class="flex items-center justify-center w-11 h-11 rounded-full border-4 border-white bg-gray-50 shadow-sm flex-shrink-0 z-10 transition-colors"
                                 [ngClass]="{
-                                    'text-blue-500': item.tipo === 'transporte',
-                                    'text-purple-500': item.tipo === 'hospedaje',
-                                    'text-orange-500': item.tipo === 'restaurante',
-                                    'text-emerald-500': item.tipo === 'tour'
+                                    'text-blue-500 group-hover:bg-blue-50 group-hover:border-blue-100': item.tipo === 'transporte',
+                                    'text-purple-500 group-hover:bg-purple-50 group-hover:border-purple-100': item.tipo === 'hospedaje',
+                                    'text-orange-500 group-hover:bg-orange-50 group-hover:border-orange-100': item.tipo === 'restaurante',
+                                    'text-emerald-500 group-hover:bg-emerald-50 group-hover:border-emerald-100': item.tipo === 'tour' || item.tipo !== 'transporte' && item.tipo !== 'hospedaje' && item.tipo !== 'restaurante'
                                 }">
                                 <svg *ngIf="item.tipo === 'transporte'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                                 <svg *ngIf="item.tipo === 'hospedaje'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                                <svg *ngIf="item.tipo === 'tour'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <svg *ngIf="item.tipo === 'restaurante'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5h16z"></path></svg>
+                                <svg *ngIf="item.tipo === 'tour' || item.tipo !== 'transporte' && item.tipo !== 'hospedaje' && item.tipo !== 'restaurante'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
                             
-                            <div class="ml-4 mt-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm w-full hover:border-jalaspe-blue/20 transition-colors">
-                                <span class="text-xs font-bold text-gray-400 block mb-1">{{ item.hora }}</span>
+                            <div class="ml-4 mt-1 bg-white p-4 rounded-xl border border-gray-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] w-full transition-colors"
+                                [ngClass]="{
+                                    'hover:border-blue-200': item.tipo === 'transporte',
+                                    'hover:border-purple-200': item.tipo === 'hospedaje',
+                                    'hover:border-orange-200': item.tipo === 'restaurante',
+                                    'hover:border-emerald-200': item.tipo === 'tour' || item.tipo !== 'transporte' && item.tipo !== 'hospedaje' && item.tipo !== 'restaurante'
+                                }">
+                                <span class="text-[11px] font-bold text-gray-400 block mb-1 tracking-wide">{{ item.hora }}</span>
                                 <h6 class="text-base font-bold text-jalaspe-blue">{{ item.titulo }}</h6>
                                 <p class="text-sm text-gray-500 mt-1">{{ item.desc }}</p>
                             </div>

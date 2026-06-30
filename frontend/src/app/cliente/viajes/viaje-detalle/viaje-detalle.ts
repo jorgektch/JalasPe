@@ -15,17 +15,8 @@ export class ViajeDetalleComponent implements OnInit, OnDestroy {
   cargando = true;
   private routeSub!: Subscription;
 
-  // Mantenemos tu data visual para la maqueta
-  cronograma = [
-    { dia: 'Día 1 - Llegada', items: [
-      { hora: '08:00 AM', titulo: 'Salida en Bus', desc: 'Terminal de transporte', tipo: 'transporte' },
-      { hora: '12:30 PM', titulo: 'Check-in Hospedaje', desc: 'Alojamiento seleccionado', tipo: 'hospedaje' }
-    ]},
-    { dia: 'Día 2 - Aventura', items: [
-      { hora: '09:00 AM', titulo: 'Tour Principal', desc: 'Actividad turística', tipo: 'tour' },
-      { hora: '02:00 PM', titulo: 'Almuerzo Local', desc: 'Restaurante sugerido', tipo: 'restaurante' }
-    ]}
-  ];
+  // Empezamos con un arreglo vacío. Se llenará con lo que diga el LLM.
+  cronograma: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -36,13 +27,13 @@ export class ViajeDetalleComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    // Subscripción a los cambios de URL para evitar cruce de datos
     this.routeSub = this.route.paramMap.subscribe(async params => {
       const id = params.get('id');
       if (id && id !== this.viajeId) {
         this.viajeId = id;
         this.cargando = true;
         this.viaje = null;
+        this.cronograma = [];
         this.cdr.detectChanges();
         
         await this.cargarViaje();
@@ -52,13 +43,44 @@ export class ViajeDetalleComponent implements OnInit, OnDestroy {
 
   async cargarViaje() {
     try {
+      // 1. Traemos la información básica del plan (Título, Destino)
       this.viaje = await this.apiService.getPlan(this.viajeId);
+      
+      // 2. Traemos el historial del chat para extraer el JSON de la IA
+      const historial = await this.apiService.getMensajesPlan(this.viajeId);
+      this.extraerCronogramaIA(historial);
+
     } catch (error) {
       this.toastr.error("El viaje no existe o no tienes acceso", "Error 404");
       this.router.navigate(['/app/viajes']);
     } finally {
       this.cargando = false;
       this.cdr.detectChanges();
+    }
+  }
+
+  extraerCronogramaIA(mensajes: any[]) {
+    // Filtramos solo los mensajes de la IA
+    const msjsIA = mensajes.filter(m => m.rol === 'assistant');
+    if (msjsIA.length === 0) return;
+
+    // Buscamos desde el último mensaje hacia atrás un bloque de código JSON
+    for (let i = msjsIA.length - 1; i >= 0; i--) {
+      const contenido = msjsIA[i].contenido;
+      // Expresión regular para atrapar lo que está dentro de ```json ... ```
+      const jsonMatch = contenido.match(/```json\n([\s\S]*?)\n```/);
+      
+      if (jsonMatch && jsonMatch[1]) {
+        try {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.cronograma = parsed;
+            return; // Encontramos y cargamos el cronograma exitosamente
+          }
+        } catch(e) {
+          console.error("El LLM generó un JSON inválido, buscando en un mensaje anterior...", e);
+        }
+      }
     }
   }
 
