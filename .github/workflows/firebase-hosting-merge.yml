@@ -33,9 +33,9 @@ jobs:
       - name: Build Frontend
         run: cd frontend && npm ci && npm run build
 
-      # ---> EL TRUCO INFALIBLE: Crear un archivo nuevo con la hora exacta <---
+      # ---> EL TRUCO DE DEVOPS: Usar el ID único de GitHub <---
       - name: Force unique deploy hash
-        run: echo "Deploy run at $(date)" > frontend/dist/frontend/browser/deploy-timestamp.txt
+        run: echo "${{ github.run_id }}-${{ github.sha }}" > frontend/dist/frontend/browser/github-deploy-id.txt
 
       # 5. Desplegar Angular a Firebase Hosting
       - name: Deploy Frontend to Firebase Hosting
