@@ -90,10 +90,22 @@
 
         <div class="p-3 sm:p-4 bg-white border-t border-gray-100">
           <form (ngSubmit)="enviarMensaje()" class="max-w-4xl mx-auto relative flex items-center">
-            <input type="text" ... [disabled]="escribiendoIA || cargandoChat || estadoPlan === 'pagado'" ... placeholder="{{ estadoPlan === 'pagado' ? 'Este plan ya ha sido confirmado' : 'Escribe tu mensaje aquí...' }}">
-            <button type="submit" [disabled]="!nuevoMensaje.trim() || escribiendoIA || cargandoChat || estadoPlan === 'pagado'" class="absolute right-1.5 w-9 h-9 rounded-lg bg-jalaspe-blue hover:bg-[#00223a] text-white flex items-center justify-center transition-colors disabled:opacity-50">
+            
+            <!-- INPUT CORREGIDO -->
+            <input type="text" 
+                   name="mensaje"
+                   [(ngModel)]="nuevoMensaje"
+                   [disabled]="escribiendoIA || cargandoChat || estadoPlan === 'pagado'"
+                   placeholder="{{ estadoPlan === 'pagado' ? 'Este plan ya ha sido confirmado' : 'Escribe tu mensaje aquí...' }}"
+                   class="w-full px-5 py-3.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none pr-14 text-sm font-medium text-jalaspe-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            
+            <!-- BOTÓN DE ENVIAR -->
+            <button type="submit" 
+                    [disabled]="!nuevoMensaje.trim() || escribiendoIA || cargandoChat || estadoPlan === 'pagado'" 
+                    class="absolute right-1.5 w-9 h-9 rounded-lg bg-jalaspe-blue hover:bg-[#00223a] text-white flex items-center justify-center transition-colors disabled:opacity-50">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
             </button>
+
           </form>
         </div>
       </main>

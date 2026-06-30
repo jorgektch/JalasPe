@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 export class Proveedores implements OnInit {
   cargando = false;
   guardando = false;
+  eliminando = false;
   proveedores: any[] = [];
   
   // GEOGRAFÍA DINÁMICA
@@ -20,8 +21,12 @@ export class Proveedores implements OnInit {
   busqueda: string = '';
   categoriaFiltro: string = 'Todos';
 
+  // CONTROL DE MODALES
   mostrarModal = false;
+  mostrarModalEliminar = false;
   
+  proveedorActivo: any = null;
+
   nuevoProveedor: any = {
     razon_social: '', nombre_comercial: '', ruc: '', categoria: 'Hospedaje',
     pais: 'Perú', ciudad: '', estado: 'Activo'
@@ -53,7 +58,6 @@ export class Proveedores implements OnInit {
     }
   }
 
-  // ==================== GEOGRAFÍA ====================
   async cargarPaises() {
     try {
       this.paises = await this.apiService.getPaises();
@@ -85,15 +89,12 @@ export class Proveedores implements OnInit {
       this.ciudades = [];
     }
   }
-  // ====================================================
 
   abrirModalCrear() {
-    // Restaurar valores por defecto al abrir
     this.nuevoProveedor = { 
       razon_social: '', nombre_comercial: '', ruc: '', categoria: 'Hospedaje', 
       pais: 'Perú', ciudad: '', estado: 'Activo' 
     };
-    // Recargar ciudades de Perú
     const peru = this.paises.find(p => p.nombre === 'Perú');
     if (peru) this.cargarCiudades(peru.id);
     
@@ -123,16 +124,60 @@ export class Proveedores implements OnInit {
     }
   }
 
+  abrirModalEliminar(p: any) {
+    this.proveedorActivo = p;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar() {
+    this.mostrarModalEliminar = false;
+    this.proveedorActivo = null;
+  }
+
+  async confirmarEliminar() {
+    try {
+      this.eliminando = true;
+      this.cdr.detectChanges();
+      
+      await this.apiService.eliminarProveedor(this.proveedorActivo.id);
+      
+      this.proveedores = this.proveedores.filter(p => p.id !== this.proveedorActivo.id);
+      this.toastr.success("Proveedor eliminado permanentemente", "Éxito");
+      this.cerrarModalEliminar();
+    } catch(error) {
+      this.toastr.error("Error al eliminar el proveedor", "Error");
+    } finally {
+      this.eliminando = false;
+      this.cdr.detectChanges();
+    }
+  }
+
   verDetalles(proveedorId: string) {
     this.router.navigate(['/admin/proveedores', proveedorId]);
   }
 
+  // Función segura para obtener la inicial del proveedor
+  obtenerInicial(nombre: any): string {
+    if (!nombre || typeof nombre !== 'string') return 'P'; // 'P' de Proveedor por defecto
+    return nombre.charAt(0).toUpperCase();
+  }
+
   get proveedoresFiltrados() {
+    if (!this.proveedores) return [];
+    const termino = (this.busqueda || '').toLowerCase();
+
     return this.proveedores.filter(p => {
-      const coincideTexto = p.nombre_comercial.toLowerCase().includes(this.busqueda.toLowerCase()) || 
-                            p.razon_social.toLowerCase().includes(this.busqueda.toLowerCase()) ||
-                            p.ruc.includes(this.busqueda);
+      // Blindaje contra datos nulos o undefined
+      const nombre = (p.nombre_comercial || '').toLowerCase();
+      const razon = (p.razon_social || '').toLowerCase();
+      const ruc = String(p.ruc || '').toLowerCase(); // String() por si el RUC se guardó como número
+
+      const coincideTexto = nombre.includes(termino) || 
+                            razon.includes(termino) ||
+                            ruc.includes(termino);
+                            
       const coincideCategoria = this.categoriaFiltro === 'Todos' || p.categoria === this.categoriaFiltro;
+      
       return coincideTexto && coincideCategoria;
     });
   }

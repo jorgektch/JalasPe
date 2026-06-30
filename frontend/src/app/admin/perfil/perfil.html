@@ -30,6 +30,23 @@
           </div>
         </div>
 
+        <!-- NUEVO BLOQUE: Tipo y Número de Documento -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Tipo de Documento</label>
+            <select name="tipo_documento" [(ngModel)]="perfilData.tipo_documento" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue font-bold">
+              <option value="" disabled selected>Seleccione...</option>
+              <option value="DNI">DNI</option>
+              <option value="Pasaporte">Pasaporte</option>
+              <option value="CE">Carné de Extranjería</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">N° de Documento</label>
+            <input type="text" name="numero_documento" [(ngModel)]="perfilData.numero_documento" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-jalaspe-blue/20 outline-none text-jalaspe-blue" placeholder="Ej: 12345678">
+          </div>
+        </div>
+
         <div>
           <label class="block text-sm font-medium text-jalaspe-blue mb-1.5">Nombre de Usuario (Username)</label>
           <div class="flex">

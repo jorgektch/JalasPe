@@ -58,6 +58,8 @@ class ActualizarPerfilData(BaseModel):
     nombres: Optional[str] = None
     apellido_paterno: Optional[str] = None
     apellido_materno: Optional[str] = None
+    tipo_documento: Optional[str] = None      # <-- Añadido
+    numero_documento: Optional[str] = None    # <-- Añadido
     username: Optional[str] = None
     fecha_nacimiento: Optional[str] = None
     celular: Optional[str] = None
@@ -119,6 +121,8 @@ class ActualizarUsuarioAdminData(BaseModel):
     nombres: Optional[str] = None
     apellido_paterno: Optional[str] = None
     apellido_materno: Optional[str] = None
+    tipo_documento: Optional[str] = None      # <-- Añadido
+    numero_documento: Optional[str] = None    # <-- Añadido
     username: Optional[str] = None
     fecha_nacimiento: Optional[str] = None
     celular: Optional[str] = None
@@ -313,6 +317,7 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
         "fecha": datetime.datetime.utcnow()
     })
 
+    # 1. Obtener configuraciones del sistema
     ajustes_doc = db.collection('sistema').document('configuracion').get()
     ajustes = ajustes_doc.to_dict() if ajustes_doc.exists else {}
     
@@ -327,6 +332,19 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
         mensajes_ref.add({"rol": "assistant", "contenido": fallback_msg, "fecha": datetime.datetime.utcnow()})
         return {"respuesta": fallback_msg}
 
+    # 2. INYECCIÓN DE CONTEXTO: Perfil del Viajero
+    perfil_usuario = db.collection('usuarios').document(usuario.get("email")).get()
+    u_data = perfil_usuario.to_dict() if perfil_usuario.exists else {}
+    
+    contexto_usuario = "\n\n--- PERFIL DEL VIAJERO ACTUAL ---\n"
+    contexto_usuario += f"Nombres y Apellidos: {u_data.get('nombres', 'No especificado')} {u_data.get('apellido_paterno', '')} {u_data.get('apellido_materno', '')}\n"
+    contexto_usuario += f"Documento Identidad: {u_data.get('tipo_documento', 'No especificado')} - {u_data.get('numero_documento', 'No especificado')}\n"
+    contexto_usuario += f"Fecha de Nacimiento: {u_data.get('fecha_nacimiento', 'No especificada')}\n"
+    contexto_usuario += f"Celular de Contacto: {u_data.get('celular', 'No especificado')}\n"
+    contexto_usuario += f"Ubicación de Origen: {u_data.get('ciudad', 'No especificada')}, {u_data.get('pais', 'No especificado')} ({u_data.get('direccion', 'No especificada')})\n"
+    contexto_usuario += "IMPORTANTE: Utiliza esta información para personalizar el trato y rellenar automáticamente las reservas. NO vuelvas a pedir el DNI/Pasaporte ni el nombre completo si ya figuran arriba como especificados.\n"
+
+    # 3. INYECCIÓN DE CONTEXTO: Inventario Dinámico
     contexto_inventario = "\n\n--- INVENTARIO Y SERVICIOS DISPONIBLES EN JALASPE ---\n"
     proveedores = db.collection('proveedores').where("estado", "==", "Activo").stream()
     for prov in proveedores:
@@ -358,7 +376,8 @@ def enviar_mensaje_chat(plan_id: str, payload: MensajeChatData, usuario: dict = 
                 t_data = t.to_dict()
                 contexto_inventario += f"  - TOUR: {t_data.get('nombre')} | Duración: {t_data.get('duracion')} | Precio: {t_data.get('precio')}\n"
 
-    system_prompt = f"{prompt_identidad}\n\n{prompt_protocolo}\n\n{prompt_guardrails}{contexto_inventario}"
+    # 4. Construcción final del System Prompt
+    system_prompt = f"{prompt_identidad}\n\n{prompt_protocolo}\n\n{prompt_guardrails}{contexto_usuario}{contexto_inventario}"
     
     historial_docs = mensajes_ref.order_by("fecha").limit_to_last(15).get()
     mensajes_ia = [{"role": "system", "content": system_prompt}]

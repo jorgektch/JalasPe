@@ -18,6 +18,7 @@ export class Perfil implements OnInit {
 
   perfilData: any = {
     nombres: '', apellido_paterno: '', apellido_materno: '',
+    tipo_documento: '', numero_documento: '', // <-- Campos agregados
     username: '', fecha_nacimiento: '', celular: '',
     pais: '', ciudad: '', direccion: ''
   };
