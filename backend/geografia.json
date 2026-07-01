@@ -1,0 +1,21 @@
+{
+  "paises": [
+    {
+      "nombre": "Perú",
+      "ciudades": [
+        { "nombre": "Lima", "region": "Lima" },
+        { "nombre": "Cusco", "region": "Cusco" },
+        { "nombre": "Arequipa", "region": "Arequipa" },
+        { "nombre": "Ica", "region": "Ica" }
+      ]
+    },
+    {
+      "nombre": "México",
+      "ciudades": [
+        { "nombre": "Ciudad de México", "region": "CDMX" },
+        { "nombre": "Cancún", "region": "Quintana Roo" },
+        { "nombre": "Oaxaca", "region": "Oaxaca" }
+      ]
+    }
+  ]
+}
